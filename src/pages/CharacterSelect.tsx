@@ -74,24 +74,24 @@ const CharacterSelect = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6">
-      {/* Floating emojis decoration */}
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Background image */}
+      <img
+        src="/Gemini_Generated_Image_iskfqviskfqviskf.avif"
+        alt="Island background"
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+      
+      {/* Overlay for better readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20" />
 
-      {/* Main content */}
-      <div className="relative z-10 w-full max-w-md flex flex-col items-center gap-6">
-        {/* Title */}
-        <div className="text-center mb-4">
-          <span className="text-5xl mb-4 block">👋</span>
-          <h1 className="text-2xl font-semibold text-foreground tracking-tight">你好，{userName}！</h1>
-          <p className="text-muted-foreground mt-2">選擇你的角色形象</p>
-        </div>
-
-        {/* Avatar display */}
+      {/* Avatar positioned on the island */}
+      <div className="absolute left-1/2 top-[45%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
         <div className="relative">
-          <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-foreground/10 bg-card shadow-lg">
+          <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white/80 bg-card shadow-2xl">
             {isLoading && (
               <div className="absolute inset-0 flex items-center justify-center bg-muted">
-                <div className="w-8 h-8 border-4 border-foreground/20 border-t-foreground rounded-full animate-spin" />
+                <div className="w-6 h-6 border-4 border-foreground/20 border-t-foreground rounded-full animate-spin" />
               </div>
             )}
             <img
@@ -103,23 +103,34 @@ const CharacterSelect = () => {
             />
           </div>
         </div>
+        {/* Name label */}
+        <div className="mt-2 px-3 py-1 bg-white/90 rounded-full shadow-lg">
+          <span className="text-sm font-medium text-foreground">{userName}</span>
+        </div>
+      </div>
 
-        {/* Regenerate button */}
-        <Button
-          onClick={handleRegenerate}
-          variant="outline"
-          size="lg"
-          className="gap-2 rounded-full px-6"
-          disabled={isLoading}
-        >
-          <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
-          重新生成
-        </Button>
+      {/* Bottom controls */}
+      <div className="absolute bottom-0 left-0 right-0 p-6 pb-10 bg-gradient-to-t from-black/40 to-transparent">
+        <div className="max-w-md mx-auto flex flex-col items-center gap-4">
+          <p className="text-white/90 text-sm font-medium">選擇你的角色形象</p>
+          
+          {/* Regenerate button */}
+          <Button
+            onClick={handleRegenerate}
+            variant="outline"
+            size="lg"
+            className="gap-2 rounded-full px-6 bg-white/90 border-white/50 text-foreground hover:bg-white"
+            disabled={isLoading}
+          >
+            <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+            重新生成
+          </Button>
 
-        {/* Complete button */}
-        <Button onClick={handleComplete} variant="clubhouse" size="xl" className="w-full mt-4">
-          完成
-        </Button>
+          {/* Complete button */}
+          <Button onClick={handleComplete} variant="clubhouse" size="xl" className="w-full">
+            完成
+          </Button>
+        </div>
       </div>
     </div>
   );
