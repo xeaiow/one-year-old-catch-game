@@ -1,14 +1,15 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 const Index = () => {
   const [name, setName] = useState("");
+  const navigate = useNavigate();
 
   const handleJoin = () => {
     if (name.trim()) {
-      console.log("Joining with name:", name);
-      // Future: navigate to game room
+      navigate("/character", { state: { name: name.trim() } });
     }
   };
 
