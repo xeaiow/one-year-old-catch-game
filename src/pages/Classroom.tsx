@@ -62,64 +62,64 @@ const Classroom = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background px-6 py-12">
-      {/* Header */}
-      <div className="text-center mb-12">
-        <span className="text-4xl mb-4 block">🏫</span>
-        <h1 className="text-2xl font-bold text-foreground">教室</h1>
-        <p className="text-muted-foreground text-sm mt-2">今日出席人數：{seats.filter(s => s.occupied).length} 人</p>
-      </div>
-
-      {/* Teacher's desk */}
-      <div className="max-w-md mx-auto mb-12">
-        <div className="bg-foreground/10 rounded-xl py-3 px-6 text-center">
-          <span className="text-sm text-muted-foreground">講台</span>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Background image */}
+      <img
+        src="/Gemini_Generated_Image_iskfqviskfqviskf.avif"
+        alt="Island background"
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+      
+      {/* Header overlay */}
+      <div className="absolute top-0 left-0 right-0 p-6 bg-gradient-to-b from-black/30 to-transparent">
+        <div className="text-center">
+          <h1 className="text-xl font-bold text-white drop-shadow-lg">教室</h1>
+          <p className="text-white/80 text-sm mt-1 drop-shadow">今日出席人數：{seats.filter(s => s.occupied).length} 人</p>
         </div>
       </div>
 
-      {/* Seats grid */}
-      <div className="max-w-lg mx-auto">
-        <div className="grid grid-cols-5 gap-4">
-          {seats.map((seat) => (
-            <div
-              key={seat.id}
-              className={`
-                aspect-square rounded-2xl flex flex-col items-center justify-center
-                transition-all duration-200
-                ${seat.occupied 
-                  ? 'bg-foreground/5 hover:bg-foreground/10 cursor-pointer' 
-                  : 'bg-foreground/[0.02] border-2 border-dashed border-foreground/10'
-                }
-              `}
-            >
-              {seat.occupied ? (
-                <>
+      {/* Avatars positioned on the island */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="relative w-[280px] h-[280px]">
+          {seats.filter(s => s.occupied).map((seat, index) => {
+            // Position avatars in a circular pattern on the island
+            const totalOccupied = seats.filter(s => s.occupied).length;
+            const angle = (index / totalOccupied) * 2 * Math.PI - Math.PI / 2;
+            const radius = 80;
+            const x = Math.cos(angle) * radius;
+            const y = Math.sin(angle) * radius;
+            
+            return (
+              <div
+                key={seat.id}
+                className="absolute left-1/2 top-1/2 flex flex-col items-center transition-all duration-300 hover:scale-110 cursor-pointer"
+                style={{
+                  transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+                }}
+              >
+                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/90 shadow-xl">
                   <img
                     src={`https://tapback.co/api/avatar/${seat.avatarSeed}.webp`}
                     alt={seat.name}
-                    className="w-10 h-10 rounded-full mb-1"
+                    className="w-full h-full object-cover"
                   />
-                  <span className="text-xs text-foreground/70 truncate max-w-full px-1">
-                    {seat.name}
-                  </span>
-                </>
-              ) : (
-                <span className="text-foreground/20 text-lg">🪑</span>
-              )}
-            </div>
-          ))}
+                </div>
+                <div className="mt-1 px-2 py-0.5 bg-white/90 rounded-full shadow-md">
+                  <span className="text-[10px] font-medium text-foreground">{seat.name}</span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* Legend */}
-      <div className="max-w-lg mx-auto mt-12 flex justify-center gap-6 text-sm text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-foreground/5"></div>
-          <span>已入座</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded border-2 border-dashed border-foreground/10"></div>
-          <span>空位</span>
+      {/* Legend at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/30 to-transparent">
+        <div className="flex justify-center gap-4 text-sm text-white/80">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-white/80 border border-white"></div>
+            <span className="drop-shadow">已入座</span>
+          </div>
         </div>
       </div>
     </div>
