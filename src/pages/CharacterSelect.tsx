@@ -56,8 +56,6 @@ const CharacterSelect = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6">
-      {/* Floating emojis decoration */}
-
       {/* Main content */}
       <div className="relative z-10 w-full max-w-md flex flex-col items-center gap-6">
         {/* Title */}
