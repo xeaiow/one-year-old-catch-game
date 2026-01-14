@@ -41,7 +41,7 @@ const Index = () => {
         {/* Logo/Title area with emoji */}
         <div className="text-center mb-8">
           <span className="text-6xl mb-4 block">🎉</span>
-          <h1 className="text-2xl font-semibold text-foreground tracking-tight">歡迎加入遊戲</h1>
+          <h1 className="text-2xl font-semibold text-foreground tracking-tight">歡迎您來參加吳涵晞的抓周儀式</h1>
         </div>
 
         {/* Name input */}
