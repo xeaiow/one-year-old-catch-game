@@ -1,0 +1,130 @@
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import confetti from "canvas-confetti";
+import { RefreshCw } from "lucide-react";
+
+const generateRandomString = (length: number) => {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+};
+
+const CharacterSelect = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const userName = (location.state as { name?: string })?.name || "Guest";
+  
+  const [avatarSeed, setAvatarSeed] = useState(() => userName + generateRandomString(6));
+  const [isLoading, setIsLoading] = useState(true);
+
+  const avatarUrl = `https://tapback.co/api/avatar/${avatarSeed}.webp`;
+
+  const handleRegenerate = () => {
+    setIsLoading(true);
+    setAvatarSeed(userName + generateRandomString(6));
+  };
+
+  const handleComplete = () => {
+    // Fire confetti
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ["#FFD700", "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7"],
+    });
+
+    // Fire more confetti from sides
+    setTimeout(() => {
+      confetti({
+        particleCount: 80,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.6 },
+      });
+      confetti({
+        particleCount: 80,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.6 },
+      });
+    }, 200);
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6">
+      {/* Floating emojis decoration */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <span className="absolute top-[10%] left-[15%] text-4xl animate-bounce" style={{ animationDelay: "0s" }}>
+          🎨
+        </span>
+        <span className="absolute top-[20%] right-[20%] text-3xl animate-bounce" style={{ animationDelay: "0.5s" }}>
+          ✨
+        </span>
+        <span className="absolute bottom-[30%] left-[10%] text-3xl animate-bounce" style={{ animationDelay: "1s" }}>
+          👤
+        </span>
+        <span className="absolute bottom-[20%] right-[15%] text-4xl animate-bounce" style={{ animationDelay: "0.3s" }}>
+          🌟
+        </span>
+      </div>
+
+      {/* Main content */}
+      <div className="relative z-10 w-full max-w-md flex flex-col items-center gap-6">
+        {/* Title */}
+        <div className="text-center mb-4">
+          <span className="text-5xl mb-4 block">👋</span>
+          <h1 className="text-2xl font-semibold text-foreground tracking-tight">
+            你好，{userName}！
+          </h1>
+          <p className="text-muted-foreground mt-2">選擇你的角色形象</p>
+        </div>
+
+        {/* Avatar display */}
+        <div className="relative">
+          <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-foreground/10 bg-card shadow-lg">
+            {isLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                <div className="w-8 h-8 border-4 border-foreground/20 border-t-foreground rounded-full animate-spin" />
+              </div>
+            )}
+            <img
+              src={avatarUrl}
+              alt="Avatar"
+              className={`w-full h-full object-cover transition-opacity duration-300 ${isLoading ? "opacity-0" : "opacity-100"}`}
+              onLoad={() => setIsLoading(false)}
+              onError={() => setIsLoading(false)}
+            />
+          </div>
+        </div>
+
+        {/* Regenerate button */}
+        <Button
+          onClick={handleRegenerate}
+          variant="outline"
+          size="lg"
+          className="gap-2 rounded-full px-6"
+          disabled={isLoading}
+        >
+          <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+          重新生成
+        </Button>
+
+        {/* Complete button */}
+        <Button
+          onClick={handleComplete}
+          variant="clubhouse"
+          size="xl"
+          className="w-full mt-4"
+        >
+          完成 🎉
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+export default CharacterSelect;
