@@ -8,22 +8,26 @@ interface Student {
 }
 
 // Pre-defined island positions (percentage-based for responsiveness)
-// These coordinates map to the green island areas in the background image
+// Precisely mapped to the actual island centers in the background image
 const islandPositions = [
-  { x: 8, y: 5 },    // Top-left island
-  { x: 35, y: 8 },   // Top-center island
-  { x: 85, y: 5 },   // Top-right volcano island
-  { x: 5, y: 28 },   // Left large island
-  { x: 28, y: 32 },  // Center-left island with palms
-  { x: 55, y: 25 },  // Center island
-  { x: 78, y: 30 },  // Right side island
-  { x: 8, y: 55 },   // Bottom-left triangle island
-  { x: 30, y: 58 },  // Bottom center-left
-  { x: 55, y: 52 },  // Bottom center
-  { x: 75, y: 55 },  // Bottom right island
-  { x: 20, y: 78 },  // Very bottom left
-  { x: 50, y: 82 },  // Very bottom center (large island)
-  { x: 80, y: 80 },  // Very bottom right
+  { x: 13, y: 12 },  // Top-left large island (heart-shaped)
+  { x: 40, y: 8 },   // Top-center island with palm trees
+  { x: 58, y: 14 },  // Top center-right elongated island
+  { x: 87, y: 10 },  // Top-right volcano island
+  { x: 8, y: 32 },   // Left large island with huts
+  { x: 28, y: 28 },  // Center-left small palm island
+  { x: 38, y: 40 },  // Center large island with dock
+  { x: 62, y: 32 },  // Center-right island with volcano
+  { x: 80, y: 38 },  // Right side elongated island
+  { x: 12, y: 54 },  // Left triangle island with dock
+  { x: 32, y: 52 },  // Center-left small island
+  { x: 48, y: 56 },  // Center island with palms
+  { x: 68, y: 54 },  // Center-right island with hut
+  { x: 85, y: 58 },  // Right side island
+  { x: 8, y: 74 },   // Bottom-left small island
+  { x: 24, y: 78 },  // Bottom left-center island with dock
+  { x: 52, y: 82 },  // Bottom center large island
+  { x: 78, y: 80 },  // Bottom right island
 ];
 
 // Simulated students with random names
@@ -59,7 +63,7 @@ const Classroom = () => {
     <div className="min-h-screen relative overflow-hidden">
       {/* Background image */}
       <img
-        src="/Gemini_Generated_Image_iskfqviskfqviskf.avif"
+        src="/islands-bg.png"
         alt="Island background"
         className="absolute inset-0 w-full h-full object-cover"
       />
