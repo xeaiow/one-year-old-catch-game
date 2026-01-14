@@ -20,6 +20,7 @@ const CharacterSelect = () => {
 
   const [avatarSeed, setAvatarSeed] = useState(() => userName + generateRandomString(6));
   const [isLoading, setIsLoading] = useState(true);
+  const [isComplete, setIsComplete] = useState(false);
 
   const avatarUrl = `https://tapback.co/api/avatar/${avatarSeed}.webp`;
 
@@ -52,7 +53,25 @@ const CharacterSelect = () => {
         origin: { x: 1, y: 0.6 },
       });
     }, 200);
+
+    // Show success message after confetti
+    setTimeout(() => {
+      setIsComplete(true);
+    }, 800);
   };
+
+  // Success screen
+  if (isComplete) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6">
+        <div className="text-center">
+          <span className="text-6xl mb-6 block">🎉</span>
+          <h1 className="text-4xl font-bold text-foreground mb-4">簽到成功</h1>
+          <p className="text-muted-foreground text-lg">網頁先別關，等等還要玩小遊戲</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6">
