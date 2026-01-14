@@ -99,7 +99,7 @@ const CharacterSelect = () => {
 
         {/* Complete button */}
         <Button onClick={handleComplete} variant="clubhouse" size="xl" className="w-full mt-4">
-          完成 🎉
+          完成
         </Button>
       </div>
     </div>
