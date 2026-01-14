@@ -69,7 +69,7 @@ const CharacterSelect = () => {
 
         {/* Avatar display */}
         <div className="relative">
-          <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-foreground/10 bg-card shadow-lg">
+          <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-foreground/10 bg-card shadow-lg">
             {isLoading && (
               <div className="absolute inset-0 flex items-center justify-center bg-muted">
                 <div className="w-8 h-8 border-4 border-foreground/20 border-t-foreground rounded-full animate-spin" />
