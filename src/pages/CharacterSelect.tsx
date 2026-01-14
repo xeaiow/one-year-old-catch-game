@@ -17,7 +17,7 @@ const CharacterSelect = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const userName = (location.state as { name?: string })?.name || "Guest";
-  
+
   const [avatarSeed, setAvatarSeed] = useState(() => userName + generateRandomString(6));
   const [isLoading, setIsLoading] = useState(true);
 
@@ -57,29 +57,13 @@ const CharacterSelect = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6">
       {/* Floating emojis decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <span className="absolute top-[10%] left-[15%] text-4xl animate-bounce" style={{ animationDelay: "0s" }}>
-          🎨
-        </span>
-        <span className="absolute top-[20%] right-[20%] text-3xl animate-bounce" style={{ animationDelay: "0.5s" }}>
-          ✨
-        </span>
-        <span className="absolute bottom-[30%] left-[10%] text-3xl animate-bounce" style={{ animationDelay: "1s" }}>
-          👤
-        </span>
-        <span className="absolute bottom-[20%] right-[15%] text-4xl animate-bounce" style={{ animationDelay: "0.3s" }}>
-          🌟
-        </span>
-      </div>
 
       {/* Main content */}
       <div className="relative z-10 w-full max-w-md flex flex-col items-center gap-6">
         {/* Title */}
         <div className="text-center mb-4">
           <span className="text-5xl mb-4 block">👋</span>
-          <h1 className="text-2xl font-semibold text-foreground tracking-tight">
-            你好，{userName}！
-          </h1>
+          <h1 className="text-2xl font-semibold text-foreground tracking-tight">你好，{userName}！</h1>
           <p className="text-muted-foreground mt-2">選擇你的角色形象</p>
         </div>
 
@@ -114,12 +98,7 @@ const CharacterSelect = () => {
         </Button>
 
         {/* Complete button */}
-        <Button
-          onClick={handleComplete}
-          variant="clubhouse"
-          size="xl"
-          className="w-full mt-4"
-        >
+        <Button onClick={handleComplete} variant="clubhouse" size="xl" className="w-full mt-4">
           完成 🎉
         </Button>
       </div>
