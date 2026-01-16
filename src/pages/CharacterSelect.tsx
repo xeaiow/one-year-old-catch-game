@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import confetti from "canvas-confetti";
@@ -20,6 +20,7 @@ const CharacterSelect = () => {
 
   const [avatarSeed, setAvatarSeed] = useState(() => userName + generateRandomString(6));
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
 
   const avatarUrl = `https://tapback.co/api/avatar/${avatarSeed}.webp`;
@@ -30,6 +31,8 @@ const CharacterSelect = () => {
   };
 
   const handleComplete = () => {
+    setIsSubmitting(true);
+
     // Fire confetti
     confetti({
       particleCount: 150,
@@ -67,7 +70,7 @@ const CharacterSelect = () => {
         <div className="text-center">
           <span className="text-6xl mb-6 block">🎉</span>
           <h1 className="text-4xl font-bold text-foreground mb-4">簽到成功</h1>
-          <p className="text-muted-foreground text-lg">網頁先別關，等等還要玩小遊戲</p>
+          <p className="text-muted-foreground text-lg">網頁先留著～等等還要玩小遊戲</p>
         </div>
       </div>
     );
@@ -103,20 +106,18 @@ const CharacterSelect = () => {
         </div>
 
         {/* Regenerate button */}
-        <Button
+        <button
           onClick={handleRegenerate}
-          variant="outline"
-          size="lg"
-          className="gap-2 rounded-full px-6"
+          className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
           disabled={isLoading}
         >
           <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
-          重新生成
-        </Button>
+          <span className="underline underline-offset-4">重新產生</span>
+        </button>
 
         {/* Complete button */}
-        <Button onClick={handleComplete} variant="clubhouse" size="xl" className="w-full mt-4">
-          完成
+        <Button onClick={handleComplete} variant="clubhouse" size="xl" className="w-full mt-4" disabled={isSubmitting}>
+          {isSubmitting ? "Submitting..." : "完成"}
         </Button>
       </div>
     </div>

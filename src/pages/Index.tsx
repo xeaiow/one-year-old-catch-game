@@ -17,23 +17,14 @@ const Index = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6">
       {/* Floating emojis decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <span className="absolute top-[10%] left-[15%] text-4xl animate-bounce" style={{ animationDelay: "0s" }}>
+        <span className="absolute top-[24%] left-[15%] text-4xl animate-bounce" style={{ animationDelay: "0s" }}>
           👋
         </span>
-        <span className="absolute top-[20%] right-[20%] text-3xl animate-bounce" style={{ animationDelay: "0.5s" }}>
+        <span className="absolute top-[28%] right-[15%] text-3xl animate-bounce" style={{ animationDelay: "0.5s" }}>
           🎮
         </span>
-        <span className="absolute bottom-[30%] left-[10%] text-3xl animate-bounce" style={{ animationDelay: "1s" }}>
-          ✨
-        </span>
-        <span className="absolute bottom-[20%] right-[15%] text-4xl animate-bounce" style={{ animationDelay: "0.3s" }}>
-          🎯
-        </span>
-        <span className="absolute top-[40%] left-[5%] text-2xl animate-bounce" style={{ animationDelay: "0.7s" }}>
-          🎲
-        </span>
         <span className="absolute top-[15%] left-[50%] text-3xl animate-bounce" style={{ animationDelay: "0.2s" }}>
-          🏆
+          🎲
         </span>
       </div>
 
@@ -52,10 +43,10 @@ const Index = () => {
         {/* Name input */}
         <Input
           type="text"
-          placeholder="您的名字"
+          placeholder="你的名字"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full h-16 text-xl text-center bg-card border-2 border-border rounded-2xl placeholder:text-muted-foreground focus:border-foreground focus:ring-0 transition-all"
+          className="w-full h-16 text-xl text-center bg-card border-2 border-border rounded-2xl placeholder:text-gray-400 focus:border-foreground focus:ring-0 transition-all"
         />
 
         {/* Join button */}
