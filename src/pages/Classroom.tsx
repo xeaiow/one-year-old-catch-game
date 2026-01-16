@@ -155,8 +155,8 @@ const Classroom = () => {
             <div
               className="rounded-full overflow-hidden"
               style={{
-                width: student.size,
-                height: student.size,
+                width: student.size-2,
+                height: student.size-2,
               }}
             >
               <img
@@ -169,7 +169,7 @@ const Classroom = () => {
 
           {/* Name tag with glassmorphism */}
           <div className="mt-1.5 px-2.5 py-0.5 backdrop-blur-xl bg-white/30 rounded-full border border-white/40 shadow-md">
-            <span className="text-[10px] font-semibold text-white drop-shadow-sm whitespace-nowrap">{truncateName(student.name)}</span>
+            <span className="text-[12px] font-semibold text-neutral-800 drop-shadow-sm whitespace-nowrap">{truncateName(student.name)}</span>
           </div>
         </div>
       ))}
