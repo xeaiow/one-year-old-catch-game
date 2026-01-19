@@ -56,6 +56,19 @@ export default {
   				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
+  			},
+  			kawaii: {
+  				pink: 'hsl(var(--kawaii-pink))',
+  				mint: 'hsl(var(--kawaii-mint))',
+  				lavender: 'hsl(var(--kawaii-lavender))',
+  				peach: 'hsl(var(--kawaii-peach))',
+  				yellow: 'hsl(var(--kawaii-yellow))',
+  				blue: 'hsl(var(--kawaii-blue))'
+  			},
+  			glow: {
+  				pink: 'hsl(var(--glow-pink))',
+  				mint: 'hsl(var(--glow-mint))',
+  				lavender: 'hsl(var(--glow-lavender))'
   			}
   		},
   		borderRadius: {

@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -43,6 +44,22 @@ All colors MUST be HSL.
     --ring: 37 92% 50%;
 
     --radius: 1rem;
+
+    /* Kawaii Pastel Palette for Bingo Game */
+    --kawaii-pink: 330 70% 80%;
+    --kawaii-mint: 160 50% 78%;
+    --kawaii-lavender: 270 60% 82%;
+    --kawaii-peach: 25 80% 85%;
+    --kawaii-yellow: 45 90% 85%;
+    --kawaii-blue: 200 70% 82%;
+
+    /* Glow effects */
+    --glow-pink: 330 100% 70%;
+    --glow-mint: 160 80% 65%;
+    --glow-lavender: 270 80% 75%;
+
+    --shadow-kawaii: 0 4px 20px -2px hsl(330 70% 75% / 0.3);
+    --shadow-glow: 0 0 30px hsl(330 100% 70% / 0.5);
 
     --sidebar-background: 0 0% 98%;
 
@@ -135,6 +152,19 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 25 83% 14%;
     --sidebar-border: 33 5% 32%;
     --sidebar-ring: 43 96% 56%;
+
+    /* Dark mode kawaii colors */
+    --kawaii-pink: 330 60% 60%;
+    --kawaii-mint: 160 40% 50%;
+    --kawaii-lavender: 270 50% 55%;
+    --kawaii-peach: 25 60% 60%;
+    --kawaii-yellow: 45 70% 60%;
+    --kawaii-blue: 200 50% 55%;
+
+    --glow-pink: 330 80% 60%;
+    --glow-mint: 160 60% 50%;
+    --glow-lavender: 270 60% 60%;
+
     --chart-1: 45 96% 64%;
     --chart-2: 48 96% 76%;
     --chart-3: 43 96% 56%;
@@ -159,5 +189,15 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .kawaii-shadow {
+    box-shadow: var(--shadow-kawaii);
+  }
+
+  .kawaii-glow {
+    box-shadow: var(--shadow-glow);
   }
 }
