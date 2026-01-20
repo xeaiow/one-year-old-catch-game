@@ -1,10 +1,12 @@
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 import { itemsRoutes } from "./routes/items";
+import { playersRoutes } from "./routes/players";
 
 const app = new Elysia()
   .use(cors())
   .use(itemsRoutes)
+  .use(playersRoutes)
   .get("/health", () => ({ status: "ok" }))
   .listen(3001);
 
