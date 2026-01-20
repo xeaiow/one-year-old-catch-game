@@ -97,13 +97,18 @@ const GuessCell = ({ item, isSelected, onClick, index, disabled }: GuessCellProp
             <motion.img
               src={item.src}
               alt={item.name}
-              className="w-3/4 h-3/4 object-contain relative z-10 drop-shadow-sm"
+              className="w-2/3 h-1/2 object-contain relative z-10 drop-shadow-sm"
               animate={isSelected ? {
                 rotate: [0, -5, 5, -5, 0],
                 scale: [1, 1.08, 1],
               } : {}}
               transition={{ duration: 0.6, repeat: isSelected ? Infinity : 0 }}
             />
+
+            {/* Item name */}
+            <span className="text-sm sm:text-base md:text-lg font-bold text-foreground/80 mt-3 truncate max-w-full px-1">
+              {item.name}
+            </span>
 
             {/* Selected glow */}
             {isSelected && (
