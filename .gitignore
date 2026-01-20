@@ -28,3 +28,7 @@ dist-ssr
 
 # Worktrees
 .worktrees/
+
+# API
+api/.env
+api/node_modules/
