@@ -4,6 +4,7 @@ import { itemsRoutes } from "./routes/items";
 import { playersRoutes } from "./routes/players";
 import { gameResultsRoutes } from "./routes/game-results";
 import { adminAuthRoutes } from "./routes/admin/auth";
+import { adminPlayersRoutes } from "./routes/admin/players";
 
 const app = new Elysia()
   .use(cors())
@@ -11,6 +12,7 @@ const app = new Elysia()
   .use(playersRoutes)
   .use(gameResultsRoutes)
   .use(adminAuthRoutes)
+  .use(adminPlayersRoutes)
   .get("/health", () => ({ status: "ok" }))
   .listen(3001);
 
