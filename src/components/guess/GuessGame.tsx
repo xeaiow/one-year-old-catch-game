@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import GuessCell from './GuessCell';
 import FloatingDecorations from '../bingo/FloatingDecorations';
@@ -30,6 +31,7 @@ const MAX_SELECTIONS = 3;
 type Step = 'items' | 'gender';
 
 const GuessGame = () => {
+  const navigate = useNavigate();
   const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
   const [step, setStep] = useState<Step>('items');
   const [selectedGender, setSelectedGender] = useState<'boy' | 'girl' | null>(null);
@@ -38,14 +40,21 @@ const GuessGame = () => {
   const isItemsComplete = selectedIndices.length >= MAX_SELECTIONS;
 
   const handleCellClick = (index: number) => {
+    // Toggle selection
+    if (selectedIndices.includes(index)) {
+      setSelectedIndices(selectedIndices.filter(i => i !== index));
+      return;
+    }
+
+    // Don't allow more than MAX_SELECTIONS
     if (isItemsComplete) return;
-    if (selectedIndices.includes(index)) return;
 
-    const newSelections = [...selectedIndices, index];
-    setSelectedIndices(newSelections);
+    setSelectedIndices([...selectedIndices, index]);
+  };
 
-    if (newSelections.length >= MAX_SELECTIONS) {
-      setTimeout(() => setStep('gender'), 800);
+  const handleNextStep = () => {
+    if (isItemsComplete) {
+      setStep('gender');
     }
   };
 
@@ -53,7 +62,9 @@ const GuessGame = () => {
     if (selectedGender) return;
     setSelectedGender(gender);
     setShowConfetti(true);
-    setTimeout(() => setShowConfetti(false), 5000);
+    setTimeout(() => {
+      navigate('/guess-success');
+    }, 1500);
   };
 
   return (
@@ -97,7 +108,7 @@ const GuessGame = () => {
                 <span className="text-accent-foreground drop-shadow-sm">涵晞會抓什麼 ✨</span>
               </motion.h1>
               <p className="text-muted-foreground text-sm sm:text-base mt-2">
-                {isItemsComplete ? '選擇完成！' : `還可以選 ${MAX_SELECTIONS - selectedIndices.length} 個物品`}
+                {isItemsComplete ? '選擇完成！點擊下一步繼續' : `還可以選 ${MAX_SELECTIONS - selectedIndices.length} 個物品`}
               </p>
             </motion.div>
 
@@ -148,13 +159,29 @@ const GuessGame = () => {
                         isSelected={selectedIndices.includes(index)}
                         onClick={() => handleCellClick(index)}
                         index={index}
-                        disabled={isItemsComplete}
+                        disabled={isItemsComplete && !selectedIndices.includes(index)}
                       />
                     ))}
                   </div>
                 </div>
               </div>
             </motion.div>
+
+            {/* Next button */}
+            <AnimatePresence>
+              {isItemsComplete && (
+                <motion.button
+                  initial={{ scale: 0, opacity: 0, y: 20 }}
+                  animate={{ scale: 1, opacity: 1, y: 0 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 12 }}
+                  onClick={handleNextStep}
+                  className="mt-6 px-8 py-3 bg-primary text-primary-foreground rounded-full font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                >
+                  下一步 ✨
+                </motion.button>
+              )}
+            </AnimatePresence>
           </motion.div>
         ) : (
           <motion.div

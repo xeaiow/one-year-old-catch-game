@@ -9,6 +9,7 @@ import Classroom from "./pages/Classroom";
 import OneYearOldCatch from "./pages/OneYearOldCatch";
 import Bingo from "./pages/Bingo";
 import Guess from "./pages/Guess";
+import GuessSuccess from "./pages/GuessSuccess";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/one-year-old-catch" element={<OneYearOldCatch />} />
           <Route path="/bingo" element={<Bingo />} />
           <Route path="/guess" element={<Guess />} />
+          <Route path="/guess-success" element={<GuessSuccess />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
