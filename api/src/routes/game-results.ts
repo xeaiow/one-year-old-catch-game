@@ -1,7 +1,58 @@
 import { Elysia, t } from "elysia";
 import { supabase } from "../db";
 
+interface MatchedPlayer {
+  id: string;
+  player_name: string;
+  avatar_seed: string;
+  selected_items: string[];
+  guessed_gender: string;
+  match_count: number;
+}
+
 export const gameResultsRoutes = new Elysia({ prefix: "/api/game-results" })
+  .get(
+    "/matches",
+    async ({ query }) => {
+      const targetItems = query.items.split(",").filter(Boolean);
+
+      if (targetItems.length !== 3) {
+        return { error: "Must provide exactly 3 item IDs" };
+      }
+
+      const { data: results, error } = await supabase
+        .from("game_results")
+        .select("id, player_name, avatar_seed, selected_items, guessed_gender");
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      const grouped: Record<number, MatchedPlayer[]> = { 3: [], 2: [], 1: [], 0: [] };
+
+      for (const result of results || []) {
+        const playerItems = result.selected_items as string[];
+        const matchCount = playerItems.filter((item) => targetItems.includes(item)).length;
+        grouped[matchCount].push({
+          ...result,
+          match_count: matchCount,
+        });
+      }
+
+      return {
+        match3: grouped[3],
+        match2: grouped[2],
+        match1: grouped[1],
+        match0: grouped[0],
+        total: results?.length || 0,
+      };
+    },
+    {
+      query: t.Object({
+        items: t.String(),
+      }),
+    }
+  )
   .get(
     "/check",
     async ({ query }) => {

@@ -18,6 +18,23 @@ export interface GameResultPayload {
   guessed_gender: "male" | "female";
 }
 
+export interface MatchedPlayer {
+  id: string;
+  player_name: string;
+  avatar_seed: string;
+  selected_items: string[];
+  guessed_gender: string;
+  match_count: number;
+}
+
+export interface MatchesResult {
+  match3: MatchedPlayer[];
+  match2: MatchedPlayer[];
+  match1: MatchedPlayer[];
+  match0: MatchedPlayer[];
+  total: number;
+}
+
 // 檢查玩家是否已參加過
 export async function checkPlayerExists(name: string): Promise<boolean> {
   const res = await fetch(`${API_BASE}/api/game-results/check?name=${encodeURIComponent(name)}`);
@@ -46,5 +63,11 @@ export async function submitGameResult(payload: GameResultPayload): Promise<{ su
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
+  return res.json();
+}
+
+// 查詢配對結果
+export async function fetchMatches(itemIds: string[]): Promise<MatchesResult> {
+  const res = await fetch(`${API_BASE}/api/game-results/matches?items=${itemIds.join(",")}`);
   return res.json();
 }
