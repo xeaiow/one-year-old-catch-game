@@ -240,25 +240,28 @@ const RevealResults = () => {
               {matchesResult && (
                 <>
                   <ResultSection
-                    title="🏆 全中！"
+                    emoji="🏆"
                     players={matchesResult.match3}
                     color="from-yellow-400/30 to-amber-400/30"
                     borderColor="border-yellow-400/50"
                     delay={0}
+                    animationType="gold"
                   />
                   <ResultSection
-                    title="🥈 中 2 個"
+                    emoji="🥈"
                     players={matchesResult.match2}
                     color="from-slate-300/30 to-gray-400/30"
                     borderColor="border-slate-400/50"
                     delay={0.1}
+                    animationType="silver"
                   />
                   <ResultSection
-                    title="🥉 中 1 個"
+                    emoji="🥉"
                     players={matchesResult.match1}
                     color="from-amber-600/30 to-orange-400/30"
                     borderColor="border-amber-600/50"
                     delay={0.2}
+                    animationType="bronze"
                   />
                 </>
               )}
@@ -282,26 +285,59 @@ const RevealResults = () => {
 };
 
 interface ResultSectionProps {
-  title: string;
+  emoji: string;
   players: MatchedPlayer[];
   color: string;
   borderColor: string;
   delay: number;
+  animationType: 'gold' | 'silver' | 'bronze';
 }
 
-const ResultSection = ({ title, players, color, borderColor, delay }: ResultSectionProps) => {
+const floatAnimations = {
+  gold: {
+    y: [-8, 8, -8],
+    rotate: [-8, 8, -8],
+    scale: [1, 1.1, 1],
+  },
+  silver: {
+    y: [-6, 6, -6],
+    x: [-3, 3, -3],
+    rotate: [-5, 5, -5],
+  },
+  bronze: {
+    y: [-5, 5, -5],
+    rotate: [-10, 0, 10, 0, -10],
+  },
+};
+
+const floatDurations = {
+  gold: 2,
+  silver: 2.5,
+  bronze: 3,
+};
+
+const ResultSection = ({ emoji, players, color, borderColor, delay, animationType }: ResultSectionProps) => {
   if (players.length === 0) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay, duration: 0.4 }}
-        className={`p-4 rounded-2xl bg-gradient-to-r ${color} border-2 ${borderColor} backdrop-blur-sm`}
+        className={`p-4 pt-8 min-h-[100px] rounded-2xl bg-gradient-to-r ${color} border-2 ${borderColor} backdrop-blur-sm relative flex items-center justify-center`}
       >
-        <div className="flex items-center gap-2 mb-2">
-          <h3 className="text-lg font-bold">{title}</h3>
-        </div>
-        <p className="text-muted-foreground text-sm">沒有人 😢</p>
+        {/* Floating emoji - top left, highest z-index */}
+        <motion.span
+          className="absolute -left-3 -top-5 text-6xl sm:text-7xl drop-shadow-xl z-50"
+          animate={floatAnimations[animationType]}
+          transition={{
+            duration: floatDurations[animationType],
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        >
+          {emoji}
+        </motion.span>
+        <p className="text-muted-foreground text-3xl">沒有人 😢</p>
       </motion.div>
     );
   }
@@ -311,10 +347,21 @@ const ResultSection = ({ title, players, color, borderColor, delay }: ResultSect
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4 }}
-      className={`p-4 rounded-2xl bg-gradient-to-r ${color} border-2 ${borderColor} backdrop-blur-sm`}
+      className={`p-4 pt-8 rounded-2xl bg-gradient-to-r ${color} border-2 ${borderColor} backdrop-blur-sm relative`}
     >
-      <div className="flex items-center gap-2 mb-3">
-        <h3 className="text-lg font-bold">{title}</h3>
+      {/* Floating emoji - top left, highest z-index */}
+      <motion.span
+        className="absolute -left-3 -top-5 text-6xl sm:text-7xl drop-shadow-xl z-50"
+        animate={floatAnimations[animationType]}
+        transition={{
+          duration: floatDurations[animationType],
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      >
+        {emoji}
+      </motion.span>
+      <div className="flex items-center mb-3">
         <span className="ml-auto text-sm font-semibold bg-card/60 px-2 py-0.5 rounded-full">
           {players.length} 人
         </span>
