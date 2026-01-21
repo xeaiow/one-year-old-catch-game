@@ -1,55 +1,58 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import GuessCell from './GuessCell';
 import FloatingDecorations from '../bingo/FloatingDecorations';
 import Confetti from '../bingo/Confetti';
+import { fetchItems, submitGameResult, Item } from '@/lib/api';
 
-interface GuessItem {
-  id: number;
-  name: string;
-  src: string;
+interface GuessGameProps {
+  playerName: string;
+  avatarSeed: string;
 }
-
-const guessItems: GuessItem[] = [
-  { id: 1, name: '物品1', src: '/1.avif' },
-  { id: 2, name: '物品2', src: '/2.avif' },
-  { id: 3, name: '物品3', src: '/3.avif' },
-  { id: 4, name: '物品4', src: '/4.avif' },
-  { id: 5, name: '物品5', src: '/5.avif' },
-  { id: 6, name: '物品6', src: '/6.avif' },
-  { id: 7, name: '物品7', src: '/7.avif' },
-  { id: 8, name: '物品8', src: '/8.avif' },
-  { id: 9, name: '物品9', src: '/9.avif' },
-  { id: 10, name: '物品10', src: '/10.avif' },
-  { id: 11, name: '物品11', src: '/11.avif' },
-  { id: 12, name: '物品12', src: '/12.avif' },
-];
 
 const MAX_SELECTIONS = 3;
 
 type Step = 'items' | 'gender';
 
-const GuessGame = () => {
+const GuessGame = ({ playerName, avatarSeed }: GuessGameProps) => {
   const navigate = useNavigate();
-  const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
+  const [isLoadingItems, setIsLoadingItems] = useState(true);
+  const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
   const [step, setStep] = useState<Step>('items');
   const [selectedGender, setSelectedGender] = useState<'boy' | 'girl' | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const isItemsComplete = selectedIndices.length >= MAX_SELECTIONS;
+  // Fetch items from API
+  useEffect(() => {
+    const loadItems = async () => {
+      try {
+        const data = await fetchItems();
+        setItems(data);
+      } catch (error) {
+        console.error("Failed to fetch items:", error);
+      } finally {
+        setIsLoadingItems(false);
+      }
+    };
+    loadItems();
+  }, []);
 
-  const handleCellClick = (index: number) => {
+  const isItemsComplete = selectedItemIds.length >= MAX_SELECTIONS;
+
+  const handleCellClick = (itemId: string) => {
     // Toggle selection
-    if (selectedIndices.includes(index)) {
-      setSelectedIndices(selectedIndices.filter(i => i !== index));
+    if (selectedItemIds.includes(itemId)) {
+      setSelectedItemIds(selectedItemIds.filter(id => id !== itemId));
       return;
     }
 
     // Don't allow more than MAX_SELECTIONS
     if (isItemsComplete) return;
 
-    setSelectedIndices([...selectedIndices, index]);
+    setSelectedItemIds([...selectedItemIds, itemId]);
   };
 
   const handleNextStep = () => {
@@ -58,14 +61,40 @@ const GuessGame = () => {
     }
   };
 
-  const handleGenderSelect = (gender: 'boy' | 'girl') => {
-    if (selectedGender) return;
+  const handleGenderSelect = async (gender: 'boy' | 'girl') => {
+    if (selectedGender || isSubmitting) return;
+
     setSelectedGender(gender);
     setShowConfetti(true);
+    setIsSubmitting(true);
+
+    try {
+      await submitGameResult({
+        player_name: playerName,
+        avatar_seed: avatarSeed,
+        selected_items: selectedItemIds,
+        guessed_gender: gender === 'boy' ? 'male' : 'female',
+      });
+    } catch (error) {
+      console.error("Failed to submit result:", error);
+    }
+
     setTimeout(() => {
       navigate('/guess-success');
     }, 1500);
   };
+
+  // Loading state
+  if (isLoadingItems) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">載入中...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-hidden">
@@ -108,7 +137,7 @@ const GuessGame = () => {
                 <span className="text-accent-foreground drop-shadow-sm">涵晞會抓什麼 ✨</span>
               </motion.h1>
               <p className="text-muted-foreground text-sm sm:text-base mt-2">
-                {isItemsComplete ? '選擇完成！點擊下一步繼續' : `還可以選 ${MAX_SELECTIONS - selectedIndices.length} 個物品`}
+                {isItemsComplete ? '選擇完成！點擊下一步繼續' : `還可以選 ${MAX_SELECTIONS - selectedItemIds.length} 個物品`}
               </p>
             </motion.div>
 
@@ -152,14 +181,18 @@ const GuessGame = () => {
 
                 <div className="relative">
                   <div className="grid grid-cols-4 gap-3 sm:gap-4 md:gap-5 p-4 sm:p-6 md:p-8 bg-card/90 backdrop-blur-md rounded-3xl shadow-2xl border-2 border-primary/20">
-                    {guessItems.map((item, index) => (
+                    {items.map((item, index) => (
                       <GuessCell
                         key={item.id}
-                        item={item}
-                        isSelected={selectedIndices.includes(index)}
-                        onClick={() => handleCellClick(index)}
+                        item={{
+                          id: index,
+                          name: item.name,
+                          src: item.image_url,
+                        }}
+                        isSelected={selectedItemIds.includes(item.id)}
+                        onClick={() => handleCellClick(item.id)}
                         index={index}
-                        disabled={isItemsComplete && !selectedIndices.includes(index)}
+                        disabled={isItemsComplete && !selectedItemIds.includes(item.id)}
                       />
                     ))}
                   </div>

@@ -58,7 +58,7 @@ const CharacterSelect = () => {
 
     // Navigate to guess page after confetti
     setTimeout(() => {
-      navigate("/guess");
+      navigate("/guess", { state: { name: userName, avatarSeed } });
     }, 800);
   };
 
