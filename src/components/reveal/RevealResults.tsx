@@ -74,11 +74,26 @@ const RevealResults = () => {
   // Loading state
   if (isLoadingItems) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">載入中...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-kawaii-pink/20 via-background to-kawaii-lavender/20">
+        <motion.div
+          className="text-center"
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="w-16 h-16 border-4 border-kawaii-pink border-t-kawaii-lavender border-r-kawaii-mint rounded-full mx-auto mb-4"
+          />
+          <motion.p
+            className="text-muted-foreground text-lg"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          >
+            ✨ 載入中... ✨
+          </motion.p>
+        </motion.div>
       </div>
     );
   }
@@ -194,12 +209,14 @@ const RevealResults = () => {
                   initial={{ scale: 0, opacity: 0, y: 20 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
                   exit={{ scale: 0, opacity: 0 }}
+                  whileHover={{ scale: 1.05, boxShadow: "0 0 30px hsl(330 100% 70% / 0.5)" }}
+                  whileTap={{ scale: 0.95 }}
                   transition={{ type: "spring", stiffness: 200, damping: 12 }}
                   onClick={handleReveal}
                   disabled={isLoadingResults}
-                  className="mt-6 px-8 py-3 bg-primary text-primary-foreground rounded-full font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 disabled:opacity-50"
+                  className="mt-6 px-10 py-4 bg-gradient-to-r from-kawaii-pink via-kawaii-peach to-kawaii-yellow text-foreground rounded-full font-bold text-xl shadow-xl border-2 border-white/50 disabled:opacity-50 kawaii-shadow"
                 >
-                  {isLoadingResults ? '載入中...' : '揭曉結果 🎉'}
+                  {isLoadingResults ? '✨ 載入中... ✨' : '🎉 揭曉結果 🎉'}
                 </motion.button>
               )}
             </AnimatePresence>
@@ -211,8 +228,24 @@ const RevealResults = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="flex flex-col items-center w-full max-w-4xl px-4"
+            className="flex flex-col items-center w-full max-w-4xl px-4 relative"
           >
+            {/* Floating corner decorations for results */}
+            <motion.span
+              className="absolute -top-4 left-0 text-3xl"
+              animate={{ y: [0, -8, 0], rotate: [-5, 5, -5] }}
+              transition={{ duration: 3, repeat: Infinity }}
+            >
+              🎀
+            </motion.span>
+            <motion.span
+              className="absolute -top-4 right-0 text-3xl"
+              animate={{ y: [0, -8, 0], rotate: [5, -5, 5] }}
+              transition={{ duration: 2.5, repeat: Infinity }}
+            >
+              💖
+            </motion.span>
+
             {/* Title */}
             <motion.div
               initial={{ y: -50, opacity: 0 }}
@@ -221,21 +254,25 @@ const RevealResults = () => {
               className="text-center mb-6"
             >
               <motion.h1
-                className="text-2xl sm:text-4xl font-extrabold mb-2"
+                className="text-3xl sm:text-5xl font-extrabold mb-2"
                 animate={{ scale: [1, 1.02, 1] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
-                <span className="text-primary drop-shadow-sm">🎊 結果揭曉 🎊</span>
+                <span className="text-foreground drop-shadow-lg">🎊 結果揭曉 🎊</span>
               </motion.h1>
-              <div className="flex flex-wrap items-center justify-center gap-2 mt-2">
+              <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
                 <span className="text-muted-foreground text-sm sm:text-base">涵晞抓了：</span>
                 {selectedItemNames.map((name, index) => (
-                  <span
+                  <motion.span
                     key={index}
-                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-pink-500 text-white shadow-md"
+                    initial={{ scale: 0, rotate: -10 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ delay: index * 0.1, type: "spring", stiffness: 300 }}
+                    whileHover={{ scale: 1.1, rotate: [-2, 2, -2, 0] }}
+                    className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold bg-gradient-to-r from-kawaii-pink to-kawaii-peach text-foreground shadow-lg border-2 border-white/50 kawaii-shadow"
                   >
-                    {name}
-                  </span>
+                    ✨ {name}
+                  </motion.span>
                 ))}
               </div>
             </motion.div>
@@ -247,24 +284,24 @@ const RevealResults = () => {
                   <ResultSection
                     emoji="🏆"
                     players={matchesResult.match3}
-                    color="from-yellow-400/30 to-amber-400/30"
-                    borderColor="border-yellow-400/50"
+                    color="from-kawaii-yellow via-kawaii-peach to-kawaii-pink"
+                    borderColor="border-yellow-400/60"
                     delay={0}
                     animationType="gold"
                   />
                   <ResultSection
                     emoji="🥈"
                     players={matchesResult.match2}
-                    color="from-slate-300/30 to-gray-400/30"
-                    borderColor="border-slate-400/50"
+                    color="from-kawaii-blue via-kawaii-lavender to-kawaii-mint"
+                    borderColor="border-kawaii-lavender"
                     delay={0.1}
                     animationType="silver"
                   />
                   <ResultSection
                     emoji="🥉"
                     players={matchesResult.match1}
-                    color="from-amber-600/30 to-orange-400/30"
-                    borderColor="border-amber-600/50"
+                    color="from-kawaii-peach via-kawaii-pink to-kawaii-lavender"
+                    borderColor="border-kawaii-peach"
                     delay={0.2}
                     animationType="bronze"
                   />
@@ -276,11 +313,13 @@ const RevealResults = () => {
             <motion.button
               initial={{ scale: 0, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
+              whileHover={{ scale: 1.05, boxShadow: "0 0 20px hsl(270 60% 70% / 0.4)" }}
+              whileTap={{ scale: 0.95 }}
               transition={{ type: "spring", stiffness: 200, damping: 12, delay: 0.4 }}
               onClick={handleReset}
-              className="mt-8 px-8 py-3 bg-muted text-muted-foreground rounded-full font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+              className="mt-8 px-8 py-3 bg-gradient-to-r from-kawaii-lavender to-kawaii-mint text-foreground rounded-full font-bold text-lg shadow-lg border-2 border-white/50"
             >
-              重新選擇 🔄
+              🔄 重新選擇
             </motion.button>
           </motion.div>
         )}
@@ -342,7 +381,13 @@ const ResultSection = ({ emoji, players, color, borderColor, delay, animationTyp
         >
           {emoji}
         </motion.span>
-        <p className="text-muted-foreground text-3xl">沒有人 😢</p>
+        <motion.p
+          className="text-muted-foreground text-3xl"
+          animate={{ y: [0, -3, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          沒有人 😢
+        </motion.p>
       </motion.div>
     );
   }
@@ -367,26 +412,42 @@ const ResultSection = ({ emoji, players, color, borderColor, delay, animationTyp
         {emoji}
       </motion.span>
       {/* Player count - top right */}
-      <span className="absolute right-3 top-2 text-lg font-bold bg-card/80 px-2.5 py-0.5 rounded-full shadow border border-primary/20">
+      <motion.span
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: delay + 0.2, type: "spring" }}
+        className="absolute right-3 top-2 text-lg font-bold bg-gradient-to-r from-kawaii-mint to-kawaii-blue px-3 py-1 rounded-full shadow-lg border-2 border-white/50"
+      >
         {players.length} 人
-      </span>
-      <div className="flex flex-wrap gap-3 mt-6">
+      </motion.span>
+      <div className="flex flex-wrap gap-4 mt-6">
         {players.map((player, index) => (
           <motion.div
             key={player.id}
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+            initial={{ scale: 0, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            whileHover={{ scale: 1.1, y: -5 }}
             transition={{ delay: delay + index * 0.05, type: "spring", stiffness: 200 }}
             className="flex flex-col items-center"
           >
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border-2 border-card/50 shadow-lg bg-card">
-              <img
-                src={`https://tapback.co/api/avatar/${player.avatar_seed}.webp`}
-                alt={player.player_name}
-                className="w-full h-full object-cover"
-              />
+            <div className="relative">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border-3 border-white shadow-xl bg-gradient-to-br from-kawaii-pink to-kawaii-lavender p-0.5">
+                <img
+                  src={`https://tapback.co/api/avatar/${player.avatar_seed}.webp`}
+                  alt={player.player_name}
+                  className="w-full h-full object-cover rounded-full"
+                />
+              </div>
+              {/* Sparkle decoration */}
+              <motion.span
+                className="absolute -top-1 -right-1 text-xs"
+                animate={{ scale: [1, 1.3, 1], rotate: [0, 15, 0] }}
+                transition={{ duration: 2, repeat: Infinity, delay: index * 0.2 }}
+              >
+                ✨
+              </motion.span>
             </div>
-            <span className="text-xs sm:text-sm font-medium mt-1 max-w-[60px] sm:max-w-[70px] truncate text-center">
+            <span className="text-xs sm:text-sm font-bold mt-1.5 max-w-[60px] sm:max-w-[70px] truncate text-center bg-white/50 px-2 py-0.5 rounded-full">
               {player.player_name}
             </span>
           </motion.div>
