@@ -2,6 +2,23 @@ import { Elysia, t } from "elysia";
 import { supabase } from "../db";
 
 export const gameResultsRoutes = new Elysia({ prefix: "/api/game-results" })
+  .get(
+    "/check",
+    async ({ query }) => {
+      const { data: existing } = await supabase
+        .from("game_results")
+        .select("id")
+        .eq("player_name", query.name)
+        .single();
+
+      return { exists: !!existing };
+    },
+    {
+      query: t.Object({
+        name: t.String(),
+      }),
+    }
+  )
   .post(
     "/",
     async ({ body, set }) => {

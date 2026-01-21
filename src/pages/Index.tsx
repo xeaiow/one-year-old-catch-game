@@ -2,13 +2,15 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { fetchPlayersAutocomplete, Player } from "@/lib/api";
+import { fetchPlayersAutocomplete, Player, checkPlayerExists } from "@/lib/api";
 
 const Index = () => {
   const [name, setName] = useState("");
   const [suggestions, setSuggestions] = useState<Player[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isChecking, setIsChecking] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
@@ -39,9 +41,24 @@ const Index = () => {
     return () => clearTimeout(debounce);
   }, [name]);
 
-  const handleJoin = () => {
-    if (name.trim()) {
+  const handleJoin = async () => {
+    if (!name.trim()) return;
+
+    setErrorMessage("");
+    setIsChecking(true);
+
+    try {
+      const exists = await checkPlayerExists(name.trim());
+      if (exists) {
+        setErrorMessage("你已經參加過囉！");
+        return;
+      }
       navigate("/character", { state: { name: name.trim() } });
+    } catch (error) {
+      console.error("Failed to check player:", error);
+      setErrorMessage("發生錯誤，請稍後再試");
+    } finally {
+      setIsChecking(false);
     }
   };
 
@@ -96,7 +113,10 @@ const Index = () => {
             type="text"
             placeholder="你的名字"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value);
+              setErrorMessage("");
+            }}
             onFocus={handleInputFocus}
             onBlur={handleInputBlur}
             className="w-full h-16 text-xl text-center bg-card border-2 border-border rounded-2xl placeholder:text-gray-400 focus:border-foreground focus:ring-0 transition-all"
@@ -125,9 +145,14 @@ const Index = () => {
           )}
         </div>
 
+        {/* Error message */}
+        {errorMessage && (
+          <p className="text-red-500 text-sm text-center">{errorMessage}</p>
+        )}
+
         {/* Join button */}
-        <Button onClick={handleJoin} variant="clubhouse" size="xl" className="w-full">
-          Join
+        <Button onClick={handleJoin} variant="clubhouse" size="xl" className="w-full" disabled={isChecking}>
+          {isChecking ? "確認中..." : "Join"}
         </Button>
       </div>
     </div>

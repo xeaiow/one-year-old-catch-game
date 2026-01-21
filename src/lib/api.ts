@@ -18,6 +18,13 @@ export interface GameResultPayload {
   guessed_gender: "male" | "female";
 }
 
+// 檢查玩家是否已參加過
+export async function checkPlayerExists(name: string): Promise<boolean> {
+  const res = await fetch(`${API_BASE}/api/game-results/check?name=${encodeURIComponent(name)}`);
+  const data = await res.json();
+  return data.exists;
+}
+
 // 玩家名稱自動補全
 export async function fetchPlayersAutocomplete(query: string): Promise<Player[]> {
   const res = await fetch(`${API_BASE}/api/players/autocomplete?q=${encodeURIComponent(query)}`);
