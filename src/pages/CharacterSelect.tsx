@@ -70,7 +70,6 @@ const CharacterSelect = () => {
         <div className="text-center mb-4">
           <span className="text-5xl mb-4 block">👋</span>
           <h1 className="text-2xl font-semibold text-foreground tracking-tight">你好，{userName}！</h1>
-          <p className="text-muted-foreground mt-2">選擇你的角色形象</p>
         </div>
 
         {/* Avatar display */}

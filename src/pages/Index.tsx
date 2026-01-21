@@ -16,6 +16,7 @@ const Index = () => {
     const fetchSuggestions = async () => {
       if (name.trim().length === 0) {
         setSuggestions([]);
+        setShowSuggestions(false);
         return;
       }
 
@@ -23,6 +24,9 @@ const Index = () => {
       try {
         const players = await fetchPlayersAutocomplete(name);
         setSuggestions(players);
+        if (players.length > 0) {
+          setShowSuggestions(true);
+        }
       } catch (error) {
         console.error("Failed to fetch suggestions:", error);
         setSuggestions([]);
@@ -95,9 +99,6 @@ const Index = () => {
             onChange={(e) => setName(e.target.value)}
             onFocus={handleInputFocus}
             onBlur={handleInputBlur}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleJoin();
-            }}
             className="w-full h-16 text-xl text-center bg-card border-2 border-border rounded-2xl placeholder:text-gray-400 focus:border-foreground focus:ring-0 transition-all"
           />
 
