@@ -4,7 +4,19 @@ import { supabase } from "../db";
 export const gameResultsRoutes = new Elysia({ prefix: "/api/game-results" })
   .post(
     "/",
-    async ({ body }) => {
+    async ({ body, set }) => {
+      // Check if player_name already exists
+      const { data: existing } = await supabase
+        .from("game_results")
+        .select("id")
+        .eq("player_name", body.player_name)
+        .single();
+
+      if (existing) {
+        set.status = 409;
+        return { error: "Player has already submitted" };
+      }
+
       const { data, error } = await supabase
         .from("game_results")
         .insert({
