@@ -18,7 +18,7 @@ const CharacterSelect = () => {
   const navigate = useNavigate();
   const userName = (location.state as { name?: string })?.name || "Guest";
 
-  const [avatarSeed, setAvatarSeed] = useState(() => userName + generateRandomString(6));
+  const [avatarSeed, setAvatarSeed] = useState(() => generateRandomString(12));
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -26,7 +26,7 @@ const CharacterSelect = () => {
 
   const handleRegenerate = () => {
     setIsLoading(true);
-    setAvatarSeed(userName + generateRandomString(6));
+    setAvatarSeed(generateRandomString(12));
   };
 
   const handleComplete = () => {
