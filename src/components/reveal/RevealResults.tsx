@@ -227,9 +227,17 @@ const RevealResults = () => {
               >
                 <span className="text-primary drop-shadow-sm">🎊 結果揭曉 🎊</span>
               </motion.h1>
-              <p className="text-muted-foreground text-sm sm:text-base">
-                涵晞抓了：{selectedItemNames.join('、')}
-              </p>
+              <div className="flex flex-wrap items-center justify-center gap-2 mt-2">
+                <span className="text-muted-foreground text-sm sm:text-base">涵晞抓了：</span>
+                {selectedItemNames.map((name, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-pink-500 text-white shadow-md"
+                  >
+                    {name}
+                  </span>
+                ))}
+              </div>
             </motion.div>
 
             {/* Results sections */}
