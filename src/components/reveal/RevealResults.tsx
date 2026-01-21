@@ -230,9 +230,6 @@ const RevealResults = () => {
               <p className="text-muted-foreground text-sm sm:text-base">
                 涵晞抓了：{selectedItemNames.join('、')}
               </p>
-              <p className="text-muted-foreground text-xs mt-1">
-                共 {matchesResult?.total || 0} 人參與
-              </p>
             </motion.div>
 
             {/* Results sections */}
@@ -361,12 +358,11 @@ const ResultSection = ({ emoji, players, color, borderColor, delay, animationTyp
       >
         {emoji}
       </motion.span>
-      <div className="flex items-center mb-3">
-        <span className="ml-auto text-sm font-semibold bg-card/60 px-2 py-0.5 rounded-full">
-          {players.length} 人
-        </span>
-      </div>
-      <div className="flex flex-wrap gap-3">
+      {/* Player count - top right */}
+      <span className="absolute right-3 top-2 text-lg font-bold bg-card/80 px-2.5 py-0.5 rounded-full shadow border border-primary/20">
+        {players.length} 人
+      </span>
+      <div className="flex flex-wrap gap-3 mt-6">
         {players.map((player, index) => (
           <motion.div
             key={player.id}
