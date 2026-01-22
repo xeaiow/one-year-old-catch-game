@@ -71,3 +71,15 @@ export async function fetchMatches(itemIds: string[]): Promise<MatchesResult> {
   const res = await fetch(`${API_BASE}/api/game-results/matches?items=${itemIds.join(",")}`);
   return res.json();
 }
+
+export interface GenderMatchesResult {
+  correct: MatchedPlayer[];
+  incorrect: MatchedPlayer[];
+  total: number;
+}
+
+// 查詢性別配對結果
+export async function fetchGenderMatches(gender: "male" | "female"): Promise<GenderMatchesResult> {
+  const res = await fetch(`${API_BASE}/api/game-results/gender-matches?gender=${gender}`);
+  return res.json();
+}
