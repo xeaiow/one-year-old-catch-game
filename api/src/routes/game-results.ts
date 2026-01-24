@@ -179,4 +179,16 @@ export const gameResultsRoutes = new Elysia({ prefix: "/api/game-results" })
         guessed_gender: t.Union([t.Literal("male"), t.Literal("female")]),
       }),
     }
-  );
+  )
+  .delete("/clear", async () => {
+    const { error } = await supabase
+      .from("game_results")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return { success: true, message: "All game results cleared" };
+  });

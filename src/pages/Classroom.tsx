@@ -11,13 +11,18 @@ const seededRandom = (seed: number) => {
 const generatePositions = (count: number, containerWidth: number, containerHeight: number) => {
   const avatarSize = 56;
 
-  // Padding from edges
-  const topPadding = 50;
-  const bottomPadding = 45;
-  const sidePadding = 40;
+  // Frosted glass container bounds (92% width, 90% height, centered)
+  const glassWidth = containerWidth * 0.92;
+  const glassHeight = containerHeight * 0.90;
+  const glassLeft = (containerWidth - glassWidth) / 2;
+  const glassTop = (containerHeight - glassHeight) / 2;
 
-  const availableWidth = containerWidth - 2 * sidePadding;
-  const availableHeight = containerHeight - topPadding - bottomPadding;
+  // Padding from glass container edges
+  const topPadding = glassTop + 50;
+  const sidePadding = glassLeft + 40;
+
+  const availableWidth = glassWidth - 80;
+  const availableHeight = glassHeight - 95;
 
   // Calculate optimal grid size for count items
   const aspectRatio = availableWidth / availableHeight;
@@ -59,8 +64,8 @@ const generatePositions = (count: number, containerWidth: number, containerHeigh
       const extraDisplaceY = (seededRandom(seed + 300) - 0.5) * 15;
 
       allPositions.push({
-        x: Math.max(sidePadding + avatarSize / 2, Math.min(containerWidth - sidePadding - avatarSize / 2, baseX + jitterX + extraDisplaceX)),
-        y: Math.max(topPadding + avatarSize / 2, Math.min(containerHeight - bottomPadding - avatarSize / 2, baseY + jitterY + extraDisplaceY)),
+        x: Math.max(sidePadding + avatarSize / 2, Math.min(glassLeft + glassWidth - 40 - avatarSize / 2, baseX + jitterX + extraDisplaceX)),
+        y: Math.max(topPadding + avatarSize / 2, Math.min(glassTop + glassHeight - 45 - avatarSize / 2, baseY + jitterY + extraDisplaceY)),
         size: avatarSize,
       });
 
@@ -148,6 +153,15 @@ const Classroom = () => {
         className="absolute inset-0 w-full h-full object-cover"
       />
 
+      {/* Frosted glass container */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[92%] h-[90%] backdrop-blur-xl bg-white/30 rounded-3xl border border-white/40 shadow-2xl" />
+
+      {/* Noise overlay layer */}
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[92%] h-[90%] rounded-3xl opacity-80 pointer-events-none z-[1]"
+        style={{ backgroundImage: 'url(/noise-overlay.png)', backgroundRepeat: 'repeat' }}
+      />
+
       {/* Avatar cloud with glassmorphism cards */}
       {students.map((student) => {
         const isNew = newPlayerIds.has(student.id);
@@ -197,7 +211,7 @@ const Classroom = () => {
       <div className="absolute top-0 left-0 right-0 p-4 z-30">
         <div className="flex justify-center">
           <div className="px-5 py-2.5 backdrop-blur-xl bg-white/20 rounded-full border border-white/30 shadow-lg">
-            <span className="text-sm text-white/90 drop-shadow-sm">已經有 {students.length} 人報到！</span>
+            <span className="text-sm text-gray-700 font-medium">已經有 {students.length} 人報到！</span>
           </div>
         </div>
       </div>

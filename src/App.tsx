@@ -12,6 +12,7 @@ import Guess from "./pages/Guess";
 import GuessSuccess from "./pages/GuessSuccess";
 import Reveal from "./pages/Reveal";
 import RevealGender from "./pages/RevealGender";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/guess-success" element={<GuessSuccess />} />
           <Route path="/reveal" element={<Reveal />} />
           <Route path="/reveal-gender" element={<RevealGender />} />
+          <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -103,3 +103,11 @@ export async function fetchAllGameResults(): Promise<RandomPlayer[]> {
   const data = await res.json();
   return data.players;
 }
+
+// 清除所有遊戲結果
+export async function clearAllGameResults(): Promise<{ success: boolean; message: string }> {
+  const res = await fetch(`${API_BASE}/api/game-results/clear`, {
+    method: "DELETE",
+  });
+  return res.json();
+}
