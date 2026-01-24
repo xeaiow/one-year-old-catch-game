@@ -5,16 +5,18 @@ import WinningLine from './WinningLine';
 import Confetti from './Confetti';
 import FloatingDecorations from './FloatingDecorations';
 
+const CDN_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
+
 interface BingoItem {
-  emoji: string;
+  image: string;
   name: string;
   color: string;
 }
 
 // Only 2 types of patterns
 const kawaiiItemTypes: BingoItem[] = [
-  { emoji: '🧁', name: 'cupcake', color: 'pink' },   // Pattern 1 (winning pattern)
-  { emoji: '😺', name: 'kitty', color: 'peach' },    // Pattern 2
+  { image: `${CDN_BASE}/cdn/male.avif`, name: '男生', color: 'blue' },     // Pattern 1 (winning pattern)
+  { image: `${CDN_BASE}/cdn/female.avif`, name: '女生', color: 'pink' },  // Pattern 2
 ];
 
 // Lines that could form bingo (excluding winning diagonal [0,4,8])
@@ -30,24 +32,23 @@ const nonWinningLines = [
 
 // Check if a configuration would allow non-winning bingo
 const wouldCauseInvalidBingo = (items: (BingoItem | null)[]): boolean => {
-  const cupcake = kawaiiItemTypes[0].emoji;
-  
+  const winningImage = kawaiiItemTypes[0].image;
+
   for (const line of nonWinningLines) {
     // Skip the winning diagonal
     if (line[0] === 0 && line[1] === 4 && line[2] === 8) continue;
-    
-    const allCupcakes = line.every(i => items[i]?.emoji === cupcake);
-    if (allCupcakes) return true;
+
+    const allWinning = line.every(i => items[i]?.image === winningImage);
+    if (allWinning) return true;
   }
   return false;
 };
 
-// Create 9 cards: positions 0, 4, 8 are always cupcake
+// Create 9 cards: positions 0, 4, 8 are always the winning pattern
 // Other positions are random but ensure no other line can bingo
 const createBingoItems = (): BingoItem[] => {
   const items: BingoItem[] = Array(9).fill(null);
-  const winningPattern = kawaiiItemTypes[0]; // Pattern 1 (🧁)
-  const otherPattern = kawaiiItemTypes[1];   // Pattern 2 (😺)
+  const winningPattern = kawaiiItemTypes[0]; // Pattern 1 (boy)
   
   // Fixed winning diagonal: [0, 4, 8] always have pattern 1
   items[0] = { ...winningPattern };
@@ -95,8 +96,8 @@ const BingoGame = () => {
     const allFlipped = winningCells.every(i => newFlipped[i]);
     
     if (allFlipped) {
-      const firstEmoji = currentItems[winningCells[0]]?.emoji;
-      const allSame = winningCells.every(i => currentItems[i]?.emoji === firstEmoji);
+      const firstImage = currentItems[winningCells[0]]?.image;
+      const allSame = winningCells.every(i => currentItems[i]?.image === firstImage);
       if (allSame) {
         lines.push({ type: 'diag', index: 0, cells: winningCells });
       }
