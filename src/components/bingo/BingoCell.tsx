@@ -42,7 +42,7 @@ const BingoCell = ({ item, isFlipped, isWinning, onClick, index }: BingoCellProp
         stiffness: 200,
       }}
       className="relative aspect-square w-full min-h-[80px] sm:min-h-[120px] md:min-h-[150px]"
-      style={{ perspective: '1000px' }}
+      style={{ perspective: '1000px', WebkitPerspective: '1000px' }}
     >
       {/* Idle floating wrapper */}
       <motion.div
@@ -86,14 +86,19 @@ const BingoCell = ({ item, isFlipped, isWinning, onClick, index }: BingoCellProp
             transition-shadow duration-300
             ${isWinning ? 'ring-4 ring-glow-pink/60' : ''}
           `}
-          style={{ 
+          style={{
             transformStyle: 'preserve-3d',
+            WebkitTransformStyle: 'preserve-3d',
           }}
         >
           {/* Card Back */}
-          <div 
+          <div
             className="absolute inset-0 rounded-2xl overflow-hidden border-2 border-primary/20"
-            style={{ backfaceVisibility: 'hidden' }}
+            style={{
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden',
+              transform: 'rotateY(0deg)',
+            }}
           >
             <div className="w-full h-full bg-gradient-to-br from-kawaii-pink via-kawaii-lavender to-kawaii-mint p-2 flex flex-col items-center justify-center relative">
               {/* Polka dot pattern */}
@@ -179,9 +184,10 @@ const BingoCell = ({ item, isFlipped, isWinning, onClick, index }: BingoCellProp
               flex flex-col items-center justify-center gap-1
               p-2
             `}
-            style={{ 
+            style={{
               backfaceVisibility: 'hidden',
-              transform: 'rotateY(180deg)'
+              WebkitBackfaceVisibility: 'hidden',
+              transform: 'rotateY(180deg)',
             }}
           >
             {/* Corner sparkles */}
