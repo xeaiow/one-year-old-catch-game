@@ -208,21 +208,6 @@ const RevealGender = () => {
             transition={{ duration: 0.3 }}
             className="flex flex-col items-center w-full max-w-4xl px-4 relative"
           >
-            {/* Floating corner decorations for results */}
-            <motion.span
-              className="absolute -top-4 left-0 text-3xl"
-              animate={{ y: [0, -8, 0], rotate: [-5, 5, -5] }}
-              transition={{ duration: 3, repeat: Infinity }}
-            >
-              🎀
-            </motion.span>
-            <motion.span
-              className="absolute -top-4 right-0 text-3xl"
-              animate={{ y: [0, -8, 0], rotate: [5, -5, 5] }}
-              transition={{ duration: 2.5, repeat: Infinity }}
-            >
-              💖
-            </motion.span>
 
             {/* Title */}
             <motion.div
@@ -236,7 +221,7 @@ const RevealGender = () => {
                 animate={{ scale: [1, 1.02, 1] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
-                <span className="text-foreground drop-shadow-lg">🎊 二寶的性別是女生 🎊</span>
+                <span className="text-foreground drop-shadow-lg">🎊 椰果有弟弟了！</span>
               </motion.h1>
             </motion.div>
 
