@@ -19,56 +19,25 @@ const kawaiiItemTypes: BingoItem[] = [
   { image: `${CDN_BASE}/cdn/female.avif`, name: '女生', color: 'pink' },  // Pattern 2
 ];
 
-// Lines that could form bingo (excluding winning diagonal [0,4,8])
-const nonWinningLines = [
-  [0, 1, 2], // Row 0
-  [3, 4, 5], // Row 1
-  [6, 7, 8], // Row 2
-  [0, 3, 6], // Col 0
-  [1, 4, 7], // Col 1
-  [2, 5, 8], // Col 2
-  [2, 4, 6], // Anti-diagonal
-];
-
-// Check if a configuration would allow non-winning bingo
-const wouldCauseInvalidBingo = (items: (BingoItem | null)[]): boolean => {
-  const winningImage = kawaiiItemTypes[0].image;
-
-  for (const line of nonWinningLines) {
-    // Skip the winning diagonal
-    if (line[0] === 0 && line[1] === 4 && line[2] === 8) continue;
-
-    const allWinning = line.every(i => items[i]?.image === winningImage);
-    if (allWinning) return true;
-  }
-  return false;
-};
-
-// Create 9 cards: positions 0, 4, 8 are always the winning pattern
-// Other positions are random but ensure no other line can bingo
+// Fixed grid pattern:
+// 男 | 男 | 男
+// 男 | 女 | 女
+// 女 | 男 | 女
 const createBingoItems = (): BingoItem[] => {
-  const items: BingoItem[] = Array(9).fill(null);
-  const winningPattern = kawaiiItemTypes[0]; // Pattern 1 (boy)
-  
-  // Fixed winning diagonal: [0, 4, 8] always have pattern 1
-  items[0] = { ...winningPattern };
-  items[4] = { ...winningPattern };
-  items[8] = { ...winningPattern };
-  
-  // Other positions get random patterns, but validate no invalid bingo
-  const otherPositions = [1, 2, 3, 5, 6, 7];
-  
-  // Try random assignments until we find a valid configuration
-  let attempts = 0;
-  do {
-    otherPositions.forEach(pos => {
-      const randomPattern = kawaiiItemTypes[Math.floor(Math.random() * kawaiiItemTypes.length)];
-      items[pos] = { ...randomPattern };
-    });
-    attempts++;
-  } while (wouldCauseInvalidBingo(items) && attempts < 100);
-  
-  return items;
+  const male = { ...kawaiiItemTypes[0] };
+  const female = { ...kawaiiItemTypes[1] };
+
+  return [
+    { ...male },   // 0: 男
+    { ...male },   // 1: 男
+    { ...male },   // 2: 男
+    { ...male },   // 3: 男
+    { ...female }, // 4: 女
+    { ...female }, // 5: 女
+    { ...female }, // 6: 女
+    { ...male },   // 7: 男
+    { ...female }, // 8: 女
+  ];
 };
 
 interface WinLine {
@@ -91,15 +60,15 @@ const BingoGame = () => {
   const checkWin = useCallback((newFlipped: boolean[], currentItems: BingoItem[]) => {
     const lines: WinLine[] = [];
 
-    // Only check the fixed winning diagonal: [0, 4, 8]
-    const winningCells = [0, 4, 8];
+    // Only check the fixed winning row: [0, 1, 2]
+    const winningCells = [0, 1, 2];
     const allFlipped = winningCells.every(i => newFlipped[i]);
-    
+
     if (allFlipped) {
       const firstImage = currentItems[winningCells[0]]?.image;
       const allSame = winningCells.every(i => currentItems[i]?.image === firstImage);
       if (allSame) {
-        lines.push({ type: 'diag', index: 0, cells: winningCells });
+        lines.push({ type: 'row', index: 0, cells: winningCells });
       }
     }
 
