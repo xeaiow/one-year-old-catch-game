@@ -111,6 +111,22 @@ export const gameResultsRoutes = new Elysia({ prefix: "/api/game-results" })
       }),
     }
   )
+  .get("/random", async () => {
+    const { data: results, error } = await supabase
+      .from("game_results")
+      .select("id, player_name, avatar_seed");
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    if (!results || results.length === 0) {
+      return { player: null };
+    }
+
+    const randomIndex = Math.floor(Math.random() * results.length);
+    return { player: results[randomIndex] };
+  })
   .post(
     "/",
     async ({ body, set }) => {

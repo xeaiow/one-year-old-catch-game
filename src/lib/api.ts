@@ -83,3 +83,16 @@ export async function fetchGenderMatches(gender: "male" | "female"): Promise<Gen
   const res = await fetch(`${API_BASE}/api/game-results/gender-matches?gender=${gender}`);
   return res.json();
 }
+
+export interface RandomPlayer {
+  id: string;
+  player_name: string;
+  avatar_seed: string;
+}
+
+// 取得隨機玩家
+export async function fetchRandomPlayer(): Promise<RandomPlayer | null> {
+  const res = await fetch(`${API_BASE}/api/game-results/random`);
+  const data = await res.json();
+  return data.player;
+}

@@ -4,6 +4,7 @@ import BingoCell from './BingoCell';
 import WinningLine from './WinningLine';
 import Confetti from './Confetti';
 import FloatingDecorations from './FloatingDecorations';
+import { fetchRandomPlayer, RandomPlayer } from '@/lib/api';
 
 const CDN_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
@@ -52,10 +53,34 @@ const BingoGame = () => {
   const [winningLines, setWinningLines] = useState<WinLine[]>([]);
   const [showConfetti, setShowConfetti] = useState(false);
   const [hasBingo, setHasBingo] = useState(false);
+  const [selectedPlayer, setSelectedPlayer] = useState<RandomPlayer | null>(null);
+  const [isPulling, setIsPulling] = useState(false);
+  const [isSpinning, setIsSpinning] = useState(false);
 
   useEffect(() => {
     setItems(createBingoItems());
   }, []);
+
+  const handlePullLever = async () => {
+    if (isPulling) return;
+
+    setIsPulling(true);
+    setIsSpinning(true);
+    setSelectedPlayer(null);
+
+    // Simulate spinning effect
+    setTimeout(async () => {
+      try {
+        const player = await fetchRandomPlayer();
+        setSelectedPlayer(player);
+      } catch (error) {
+        console.error("Failed to fetch random player:", error);
+      } finally {
+        setIsSpinning(false);
+        setTimeout(() => setIsPulling(false), 300);
+      }
+    }, 800);
+  };
 
   const checkWin = useCallback((newFlipped: boolean[], currentItems: BingoItem[]) => {
     const lines: WinLine[] = [];
@@ -134,13 +159,153 @@ const BingoGame = () => {
         </motion.h1>
       </motion.div>
 
-      {/* Bingo Grid - Much larger and prominent */}
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.2, type: "spring" }}
-        className="relative w-full max-w-[90vw] sm:max-w-[70vmin] md:max-w-[65vmin] lg:max-w-[600px]"
-      >
+      {/* Main content with lever and grid */}
+      <div className="flex items-center justify-center gap-4 sm:gap-6 md:gap-8 w-full">
+        {/* Left side - Kawaii random player */}
+        <motion.div
+          initial={{ x: -50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3, type: "spring" }}
+          className="flex flex-col items-center gap-3"
+        >
+          {/* Avatar display */}
+          <div className="relative p-3">
+            <AnimatePresence mode="wait">
+              {isSpinning ? (
+                <motion.div
+                  key="spinning"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white/80 flex items-center justify-center"
+                >
+                  <motion.span
+                    animate={{ rotate: 360, scale: [1, 1.2, 1] }}
+                    transition={{ duration: 0.6, repeat: Infinity, ease: "linear" }}
+                    className="text-3xl"
+                  >
+                    ❓
+                  </motion.span>
+                </motion.div>
+              ) : selectedPlayer ? (
+                <motion.div
+                  key="player"
+                  initial={{ scale: 0, rotate: -10 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  exit={{ scale: 0 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 12 }}
+                  className="flex flex-col items-center"
+                >
+                  <div className="relative">
+                    <motion.div
+                      animate={{ rotate: [0, 3, -3, 0] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-3 border-white shadow-lg"
+                    >
+                      <img
+                        src={`https://tapback.co/api/avatar/${selectedPlayer.avatar_seed}.webp`}
+                        alt={selectedPlayer.player_name}
+                        className="w-full h-full object-cover"
+                      />
+                    </motion.div>
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: [0, 1.3, 1] }}
+                      transition={{ delay: 0.3 }}
+                      className="absolute -top-1 -right-1 text-xl"
+                    >
+                      💖
+                    </motion.span>
+                  </div>
+                  <motion.span
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="text-sm font-bold text-pink-600 mt-2 bg-white/80 px-3 py-1 rounded-full"
+                  >
+                    {selectedPlayer.player_name}
+                  </motion.span>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="empty"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white/50 flex items-center justify-center border-2 border-dashed border-pink-300"
+                >
+                  <span className="text-3xl opacity-50">❓</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Draw button */}
+          <motion.button
+            onClick={handlePullLever}
+            disabled={isPulling}
+            whileHover={{ scale: isPulling ? 1 : 1.1 }}
+            whileTap={{ scale: isPulling ? 1 : 0.9 }}
+            className="px-5 py-2.5 relative"
+          >
+            {/* Sparkle particles when spinning */}
+            <AnimatePresence>
+              {isPulling && (
+                <>
+                  {[...Array(6)].map((_, i) => (
+                    <motion.span
+                      key={i}
+                      initial={{ opacity: 1, scale: 0, x: 0, y: 0 }}
+                      animate={{
+                        opacity: [1, 0],
+                        scale: [0, 1],
+                        x: [0, (i % 2 === 0 ? 1 : -1) * (20 + Math.random() * 20)],
+                        y: [0, (i < 3 ? -1 : 1) * (15 + Math.random() * 15)],
+                      }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.6, delay: i * 0.1, repeat: Infinity }}
+                      className="absolute text-sm pointer-events-none"
+                      style={{ left: '50%', top: '50%' }}
+                    >
+                      {['✨', '💫', '⭐', '🌟', '💖', '✧'][i]}
+                    </motion.span>
+                  ))}
+                </>
+              )}
+            </AnimatePresence>
+
+            {/* Dice */}
+            <motion.span
+              animate={isPulling ? {
+                rotate: [0, 360],
+                scale: [1, 1.3, 1.1, 1.2, 1],
+                y: [0, -15, 0, -10, 0],
+              } : {
+                scale: [1, 1.08, 1],
+                rotate: [0, 5, -5, 0]
+              }}
+              transition={isPulling ? {
+                duration: 0.8,
+                repeat: Infinity,
+                ease: "easeInOut"
+              } : {
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="flex items-center gap-2 text-3xl"
+            >
+              🎲
+            </motion.span>
+          </motion.button>
+        </motion.div>
+
+        {/* Bingo Grid - Much larger and prominent */}
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2, type: "spring" }}
+          className="relative w-full max-w-[70vw] sm:max-w-[60vmin] md:max-w-[55vmin] lg:max-w-[500px]"
+        >
         {/* Grid container with decorative corners */}
         <div className="relative">
           {/* Corner decorations */}
@@ -196,6 +361,7 @@ const BingoGame = () => {
           </div>
         </div>
       </motion.div>
+      </div>
 
       {/* Bingo celebration */}
       <AnimatePresence>
