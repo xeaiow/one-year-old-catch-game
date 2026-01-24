@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import FloatingDecorations from '../bingo/FloatingDecorations';
 import { fetchGenderMatches, GenderMatchesResult, MatchedPlayer } from '@/lib/api';
 
+const CDN_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
+
 type Step = 'select' | 'results';
 type Gender = 'male' | 'female';
 
@@ -78,7 +80,7 @@ const RevealGender = () => {
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
                 <span className="text-primary drop-shadow-sm">🎀 揭曉</span>
-                <span className="text-accent-foreground drop-shadow-sm">二寶的性別 🎀</span>
+                <span className="text-accent-foreground drop-shadow-sm">芒果的性別 🎀</span>
               </motion.h1>
             </motion.div>
 
@@ -103,16 +105,16 @@ const RevealGender = () => {
                   transition-all duration-300
                 `}
               >
-                <motion.span
-                  className="text-7xl sm:text-8xl"
+                <motion.img
+                  src={`${CDN_BASE}/cdn/male.avif`}
+                  alt="男生"
+                  className="w-24 h-24 sm:w-28 sm:h-28 object-contain"
                   animate={selectedGender === 'male' ? {
                     rotate: [-5, 5, -5],
                     scale: [1, 1.1, 1],
                   } : {}}
                   transition={{ duration: 0.6, repeat: selectedGender === 'male' ? Infinity : 0 }}
-                >
-                  👦
-                </motion.span>
+                />
                 <span className="text-xl sm:text-2xl font-bold text-foreground">男生</span>
                 {selectedGender === 'male' && (
                   <motion.div
@@ -147,16 +149,16 @@ const RevealGender = () => {
                   transition-all duration-300
                 `}
               >
-                <motion.span
-                  className="text-7xl sm:text-8xl"
+                <motion.img
+                  src={`${CDN_BASE}/cdn/female.avif`}
+                  alt="女生"
+                  className="w-24 h-24 sm:w-28 sm:h-28 object-contain"
                   animate={selectedGender === 'female' ? {
                     rotate: [-5, 5, -5],
                     scale: [1, 1.1, 1],
                   } : {}}
                   transition={{ duration: 0.6, repeat: selectedGender === 'female' ? Infinity : 0 }}
-                >
-                  👧
-                </motion.span>
+                />
                 <span className="text-xl sm:text-2xl font-bold text-foreground">女生</span>
                 {selectedGender === 'female' && (
                   <motion.div
