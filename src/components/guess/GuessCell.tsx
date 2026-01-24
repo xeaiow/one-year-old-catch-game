@@ -106,7 +106,7 @@ const GuessCell = ({ item, isSelected, onClick, index, disabled }: GuessCellProp
             />
 
             {/* Item name */}
-            <span className="text-sm sm:text-base md:text-lg font-bold text-foreground/80 mt-3 truncate max-w-full px-1">
+            <span className="text-xl sm:text-base md:text-lg text-foreground/80 mt-3 truncate max-w-full px-1">
               {item.name}
             </span>
 
