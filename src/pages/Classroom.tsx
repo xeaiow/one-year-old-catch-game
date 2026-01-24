@@ -143,7 +143,7 @@ const Classroom = () => {
     <div className="min-h-screen relative overflow-hidden">
       {/* Background image */}
       <img
-        src="/bg.jpg"
+        src="/bg.avif"
         alt="Background"
         className="absolute inset-0 w-full h-full object-cover"
       />
@@ -193,8 +193,8 @@ const Classroom = () => {
       );
       })}
 
-      {/* Footer with glassmorphism */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 z-30">
+      {/* Header with glassmorphism */}
+      <div className="absolute top-0 left-0 right-0 p-4 z-30">
         <div className="flex justify-center">
           <div className="px-5 py-2.5 backdrop-blur-xl bg-white/20 rounded-full border border-white/30 shadow-lg">
             <span className="text-sm text-white/90 drop-shadow-sm">已經有 {students.length} 人報到！</span>
