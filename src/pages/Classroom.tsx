@@ -1,28 +1,10 @@
-import { useState, useEffect, useMemo } from "react";
-
-// Chinese names for 50 simulated students
-const chineseNames = [
-  "小明", "小華", "阿強", "小美", "大衛", "小芳", "志明", "春嬌", "阿傑", "小琳",
-  "建國", "美玲", "俊宏", "雅婷", "家豪", "怡君", "冠宇", "佩珊", "柏翰", "欣怡",
-  "承恩", "雨涵", "宇軒", "思妤", "博文", "詩涵", "浩然", "語彤", "睿哲", "心怡",
-  "子豪", "雅琪", "彥廷", "佳穎", "宗翰", "宜蓁", "品睿", "芷晴", "奕辰", "詩婷",
-  "昱翔", "筱涵", "瀚文", "羽彤", "鈺翔", "晨曦", "皓軒", "紫涵", "宸安", "若彤"
-];
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { fetchAllGameResults, RandomPlayer } from "@/lib/api";
 
 // Seeded random number generator for consistent layout
 const seededRandom = (seed: number) => {
   const x = Math.sin(seed) * 10000;
   return x - Math.floor(x);
-};
-
-// Generate random string for avatar seed
-const generateRandomString = (length: number, seed: number) => {
-  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(seededRandom(seed + i) * chars.length));
-  }
-  return result;
 };
 
 // Generate organically distributed positions
@@ -91,6 +73,9 @@ const generatePositions = (count: number, containerWidth: number, containerHeigh
 
 const Classroom = () => {
   const [containerSize, setContainerSize] = useState({ width: 1200, height: 800 });
+  const [players, setPlayers] = useState<RandomPlayer[]>([]);
+  const [newPlayerIds, setNewPlayerIds] = useState<Set<string>>(new Set());
+  const knownPlayerIds = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     const updateSize = () => {
@@ -105,18 +90,49 @@ const Classroom = () => {
     return () => window.removeEventListener("resize", updateSize);
   }, []);
 
-  const students = useMemo(() => {
-    const positions = generatePositions(50, containerSize.width, containerSize.height);
+  const fetchPlayers = useCallback(async () => {
+    const result = await fetchAllGameResults();
 
-    return chineseNames.map((name, index) => ({
-      id: index,
-      name,
-      avatarSeed: `${name}_${generateRandomString(6, index * 100)}`,
+    // Find new players
+    const newIds = new Set<string>();
+    result.forEach(player => {
+      if (!knownPlayerIds.current.has(player.id)) {
+        newIds.add(player.id);
+        knownPlayerIds.current.add(player.id);
+      }
+    });
+
+    if (newIds.size > 0) {
+      setNewPlayerIds(newIds);
+      // Clear animation state after animation completes
+      setTimeout(() => {
+        setNewPlayerIds(new Set());
+      }, 600);
+    }
+
+    setPlayers(result);
+  }, []);
+
+  useEffect(() => {
+    fetchPlayers();
+    const interval = setInterval(fetchPlayers, 10000);
+    return () => clearInterval(interval);
+  }, [fetchPlayers]);
+
+  const students = useMemo(() => {
+    if (players.length === 0) return [];
+
+    const positions = generatePositions(players.length, containerSize.width, containerSize.height);
+
+    return players.map((player, index) => ({
+      id: player.id,
+      name: player.player_name,
+      avatarSeed: player.avatar_seed,
       x: positions[index]?.x || 0,
       y: positions[index]?.y || 0,
       size: positions[index]?.size || 64,
     }));
-  }, [containerSize]);
+  }, [containerSize, players]);
 
   // Truncate name to 3 characters
   const truncateName = (name: string) => {
@@ -133,15 +149,17 @@ const Classroom = () => {
       />
 
       {/* Avatar cloud with glassmorphism cards */}
-      {students.map((student) => (
+      {students.map((student) => {
+        const isNew = newPlayerIds.has(student.id);
+        return (
         <div
           key={student.id}
-          className="absolute flex flex-col items-center transition-all duration-300 hover:scale-110 hover:z-50 cursor-pointer group"
+          className={`absolute flex flex-col items-center transition-all duration-300 hover:scale-110 hover:z-50 cursor-pointer group ${isNew ? 'animate-pop-in' : ''}`}
           style={{
             left: student.x,
             top: student.y,
             transform: 'translate(-50%, -50%)',
-            zIndex: Math.floor(student.y / 10),
+            zIndex: isNew ? 100 : Math.floor(student.y / 10),
           }}
         >
           {/* Glassmorphism avatar container */}
@@ -172,7 +190,8 @@ const Classroom = () => {
             <span className="text-[12px] font-semibold text-neutral-800 drop-shadow-sm whitespace-nowrap">{truncateName(student.name)}</span>
           </div>
         </div>
-      ))}
+      );
+      })}
 
       {/* Footer with glassmorphism */}
       <div className="absolute bottom-0 left-0 right-0 p-4 z-30">

@@ -96,3 +96,10 @@ export async function fetchRandomPlayer(): Promise<RandomPlayer | null> {
   const data = await res.json();
   return data.player;
 }
+
+// 取得所有已參加遊戲的玩家
+export async function fetchAllGameResults(): Promise<RandomPlayer[]> {
+  const res = await fetch(`${API_BASE}/api/game-results`);
+  const data = await res.json();
+  return data.players;
+}

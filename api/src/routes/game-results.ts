@@ -11,6 +11,18 @@ interface MatchedPlayer {
 }
 
 export const gameResultsRoutes = new Elysia({ prefix: "/api/game-results" })
+  .get("/", async () => {
+    const { data: results, error } = await supabase
+      .from("game_results")
+      .select("id, player_name, avatar_seed")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return { players: results || [] };
+  })
   .get(
     "/matches",
     async ({ query }) => {
