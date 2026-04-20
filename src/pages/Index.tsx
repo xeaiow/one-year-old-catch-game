@@ -152,7 +152,7 @@ const Index = () => {
 
         {/* Join button */}
         <Button onClick={handleJoin} variant="clubhouse" size="xl" className="w-full" disabled={isChecking}>
-          {isChecking ? "確認中..." : "Join"}
+          {isChecking ? "確認中..." : "簽到！"}
         </Button>
       </div>
     </div>

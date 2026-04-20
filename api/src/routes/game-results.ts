@@ -11,6 +11,18 @@ interface MatchedPlayer {
 }
 
 export const gameResultsRoutes = new Elysia({ prefix: "/api/game-results" })
+  .get("/", async () => {
+    const { data: results, error } = await supabase
+      .from("game_results")
+      .select("id, player_name, avatar_seed")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return { players: results || [] };
+  })
   .get(
     "/matches",
     async ({ query }) => {
@@ -54,6 +66,47 @@ export const gameResultsRoutes = new Elysia({ prefix: "/api/game-results" })
     }
   )
   .get(
+    "/gender-matches",
+    async ({ query }) => {
+      const targetGender = query.gender;
+
+      const { data: results, error } = await supabase
+        .from("game_results")
+        .select("id, player_name, avatar_seed, selected_items, guessed_gender");
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      const correct: MatchedPlayer[] = [];
+      const incorrect: MatchedPlayer[] = [];
+
+      for (const result of results || []) {
+        const player: MatchedPlayer = {
+          ...result,
+          match_count: result.guessed_gender === targetGender ? 1 : 0,
+        };
+
+        if (result.guessed_gender === targetGender) {
+          correct.push(player);
+        } else {
+          incorrect.push(player);
+        }
+      }
+
+      return {
+        correct,
+        incorrect,
+        total: results?.length || 0,
+      };
+    },
+    {
+      query: t.Object({
+        gender: t.Union([t.Literal("male"), t.Literal("female")]),
+      }),
+    }
+  )
+  .get(
     "/check",
     async ({ query }) => {
       const { data: existing } = await supabase
@@ -70,6 +123,22 @@ export const gameResultsRoutes = new Elysia({ prefix: "/api/game-results" })
       }),
     }
   )
+  .get("/random", async () => {
+    const { data: results, error } = await supabase
+      .from("game_results")
+      .select("id, player_name, avatar_seed");
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    if (!results || results.length === 0) {
+      return { player: null };
+    }
+
+    const randomIndex = Math.floor(Math.random() * results.length);
+    return { player: results[randomIndex] };
+  })
   .post(
     "/",
     async ({ body, set }) => {
@@ -110,4 +179,16 @@ export const gameResultsRoutes = new Elysia({ prefix: "/api/game-results" })
         guessed_gender: t.Union([t.Literal("male"), t.Literal("female")]),
       }),
     }
-  );
+  )
+  .delete("/clear", async () => {
+    const { error } = await supabase
+      .from("game_results")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000");
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return { success: true, message: "All game results cleared" };
+  });

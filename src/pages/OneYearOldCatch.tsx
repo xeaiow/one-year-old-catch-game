@@ -1,22 +1,43 @@
+import { useState, useEffect } from "react";
 import { Component as RadialIntro } from "@/components/ui/radial-intro";
-
-// 抓周物品
-const catchItems = [
-  { id: 1, name: "物品1", src: "/1.avif" },
-  { id: 2, name: "物品2", src: "/2.avif" },
-  { id: 3, name: "物品3", src: "/3.avif" },
-  { id: 4, name: "物品4", src: "/4.avif" },
-  { id: 5, name: "物品5", src: "/5.avif" },
-  { id: 6, name: "物品6", src: "/6.avif" },
-  { id: 7, name: "物品7", src: "/7.avif" },
-  { id: 8, name: "物品8", src: "/8.avif" },
-  { id: 9, name: "物品9", src: "/9.avif" },
-  { id: 10, name: "物品10", src: "/10.avif" },
-  { id: 11, name: "物品11", src: "/11.avif" },
-  { id: 12, name: "物品12", src: "/12.avif" },
-];
+import { fetchItems, Item } from "@/lib/api";
 
 const OneYearOldCatch = () => {
+  const [items, setItems] = useState<Item[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadItems = async () => {
+      try {
+        const data = await fetchItems();
+        setItems(data);
+      } catch (error) {
+        console.error("Failed to fetch items:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadItems();
+  }, []);
+
+  // Transform API items to RadialIntro format
+  const catchItems = items.map((item, index) => ({
+    id: index + 1,
+    name: item.name,
+    src: item.image_url,
+  }));
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-neutral-300 border-t-neutral-600 rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-neutral-500">載入中...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-neutral-50 flex items-center justify-center px-12 py-12">
       <div className="flex items-center gap-16">

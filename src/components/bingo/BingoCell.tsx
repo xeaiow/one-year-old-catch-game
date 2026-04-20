@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion';
 
+const CDN_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
+
 interface BingoCellProps {
   item: {
-    emoji: string;
+    image: string;
     name: string;
     color: string;
   };
@@ -40,7 +42,7 @@ const BingoCell = ({ item, isFlipped, isWinning, onClick, index }: BingoCellProp
         stiffness: 200,
       }}
       className="relative aspect-square w-full min-h-[80px] sm:min-h-[120px] md:min-h-[150px]"
-      style={{ perspective: '1000px' }}
+      style={{ perspective: '1000px', WebkitPerspective: '1000px' }}
     >
       {/* Idle floating wrapper */}
       <motion.div
@@ -84,14 +86,19 @@ const BingoCell = ({ item, isFlipped, isWinning, onClick, index }: BingoCellProp
             transition-shadow duration-300
             ${isWinning ? 'ring-4 ring-glow-pink/60' : ''}
           `}
-          style={{ 
+          style={{
             transformStyle: 'preserve-3d',
+            WebkitTransformStyle: 'preserve-3d',
           }}
         >
           {/* Card Back */}
-          <div 
+          <div
             className="absolute inset-0 rounded-2xl overflow-hidden border-2 border-primary/20"
-            style={{ backfaceVisibility: 'hidden' }}
+            style={{
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden',
+              transform: 'rotateY(0deg)',
+            }}
           >
             <div className="w-full h-full bg-gradient-to-br from-kawaii-pink via-kawaii-lavender to-kawaii-mint p-2 flex flex-col items-center justify-center relative">
               {/* Polka dot pattern */}
@@ -144,7 +151,11 @@ const BingoCell = ({ item, isFlipped, isWinning, onClick, index }: BingoCellProp
                 transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
                 className="relative z-10 flex flex-col items-center"
               >
-                <span className="text-3xl sm:text-5xl md:text-6xl">😴</span>
+                <img
+                  src={`${CDN_BASE}/cdn/card.avif`}
+                  alt=""
+                  className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 object-contain"
+                />
                 <motion.span
                   animate={{ scale: [1, 1.15, 1], opacity: [0.6, 1, 0.6] }}
                   transition={{ duration: 1.2, repeat: Infinity }}
@@ -173,9 +184,10 @@ const BingoCell = ({ item, isFlipped, isWinning, onClick, index }: BingoCellProp
               flex flex-col items-center justify-center gap-1
               p-2
             `}
-            style={{ 
+            style={{
               backfaceVisibility: 'hidden',
-              transform: 'rotateY(180deg)'
+              WebkitBackfaceVisibility: 'hidden',
+              transform: 'rotateY(180deg)',
             }}
           >
             {/* Corner sparkles */}
@@ -184,17 +196,17 @@ const BingoCell = ({ item, isFlipped, isWinning, onClick, index }: BingoCellProp
             <span className="absolute bottom-1 left-1 text-[8px] sm:text-[10px] opacity-60">⭐</span>
             <span className="absolute bottom-1 right-1 text-[8px] sm:text-[10px] opacity-60">⭐</span>
 
-            {/* Emoji */}
-            <motion.span 
-              className="text-4xl sm:text-6xl md:text-7xl relative z-10 drop-shadow-sm"
-              animate={isWinning ? { 
+            {/* Image */}
+            <motion.img
+              src={item.image}
+              alt={item.name}
+              className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 object-contain relative z-10"
+              animate={isWinning ? {
                 rotate: [0, -8, 8, -8, 0],
                 scale: [1, 1.1, 1],
               } : {}}
               transition={{ duration: 0.6, repeat: isWinning ? Infinity : 0 }}
-            >
-              {item.emoji}
-            </motion.span>
+            />
 
             {/* Name */}
             <span className="text-xs sm:text-sm md:text-base font-bold text-foreground/70 capitalize relative z-10">

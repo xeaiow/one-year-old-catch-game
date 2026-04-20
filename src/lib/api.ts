@@ -71,3 +71,43 @@ export async function fetchMatches(itemIds: string[]): Promise<MatchesResult> {
   const res = await fetch(`${API_BASE}/api/game-results/matches?items=${itemIds.join(",")}`);
   return res.json();
 }
+
+export interface GenderMatchesResult {
+  correct: MatchedPlayer[];
+  incorrect: MatchedPlayer[];
+  total: number;
+}
+
+// 查詢性別配對結果
+export async function fetchGenderMatches(gender: "male" | "female"): Promise<GenderMatchesResult> {
+  const res = await fetch(`${API_BASE}/api/game-results/gender-matches?gender=${gender}`);
+  return res.json();
+}
+
+export interface RandomPlayer {
+  id: string;
+  player_name: string;
+  avatar_seed: string;
+}
+
+// 取得隨機玩家
+export async function fetchRandomPlayer(): Promise<RandomPlayer | null> {
+  const res = await fetch(`${API_BASE}/api/game-results/random`);
+  const data = await res.json();
+  return data.player;
+}
+
+// 取得所有已參加遊戲的玩家
+export async function fetchAllGameResults(): Promise<RandomPlayer[]> {
+  const res = await fetch(`${API_BASE}/api/game-results`);
+  const data = await res.json();
+  return data.players;
+}
+
+// 清除所有遊戲結果
+export async function clearAllGameResults(): Promise<{ success: boolean; message: string }> {
+  const res = await fetch(`${API_BASE}/api/game-results/clear`, {
+    method: "DELETE",
+  });
+  return res.json();
+}

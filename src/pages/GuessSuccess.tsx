@@ -31,55 +31,19 @@ const GuessSuccess = () => {
             rotate: [0, -3, 3, 0],
           }}
           transition={{ duration: 1, repeat: Infinity }}
-          className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-primary drop-shadow-lg mb-6"
+          className="text-6xl sm:text-6xl md:text-7xl font-extrabold text-primary drop-shadow-lg mb-6"
         >
-          🎉 完成！ 🎉
+          🎉 完成！
         </motion.h1>
 
         <motion.p
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-xl sm:text-2xl text-foreground/80 font-bold"
+          className="text-2xl sm:text-2xl text-foreground/80 font-bold"
         >
-          謝謝你的參與！
+          謝謝你的參與
         </motion.p>
-
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="mt-8 flex justify-center gap-4"
-        >
-          <motion.span
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}
-            className="text-5xl"
-          >
-            🎀
-          </motion.span>
-          <motion.span
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
-            className="text-5xl"
-          >
-            💕
-          </motion.span>
-          <motion.span
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
-            className="text-5xl"
-          >
-            ✨
-          </motion.span>
-          <motion.span
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
-            className="text-5xl"
-          >
-            🌟
-          </motion.span>
-        </motion.div>
       </motion.div>
     </div>
   );

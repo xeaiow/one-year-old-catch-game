@@ -83,4 +83,17 @@ export const adminResultsRoutes = new Elysia({ prefix: "/api/admin" })
       gender_stats: genderStats,
       item_stats: itemStats,
     };
+  })
+  .delete("/results", async ({ set, isAdmin }) => {
+    const unauthorized = requireAdmin(set, isAdmin);
+    if (unauthorized) return unauthorized;
+
+    const { error } = await supabase
+      .from("game_results")
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000"); // Delete all rows
+
+    if (error) throw new Error(error.message);
+
+    return { success: true, message: "All game results cleared" };
   });

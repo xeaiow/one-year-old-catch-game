@@ -1,13 +1,5 @@
-import { useState, useEffect, useMemo } from "react";
-
-// Chinese names for 50 simulated students
-const chineseNames = [
-  "小明", "小華", "阿強", "小美", "大衛", "小芳", "志明", "春嬌", "阿傑", "小琳",
-  "建國", "美玲", "俊宏", "雅婷", "家豪", "怡君", "冠宇", "佩珊", "柏翰", "欣怡",
-  "承恩", "雨涵", "宇軒", "思妤", "博文", "詩涵", "浩然", "語彤", "睿哲", "心怡",
-  "子豪", "雅琪", "彥廷", "佳穎", "宗翰", "宜蓁", "品睿", "芷晴", "奕辰", "詩婷",
-  "昱翔", "筱涵", "瀚文", "羽彤", "鈺翔", "晨曦", "皓軒", "紫涵", "宸安", "若彤"
-];
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { fetchAllGameResults, RandomPlayer } from "@/lib/api";
 
 // Seeded random number generator for consistent layout
 const seededRandom = (seed: number) => {
@@ -15,27 +7,22 @@ const seededRandom = (seed: number) => {
   return x - Math.floor(x);
 };
 
-// Generate random string for avatar seed
-const generateRandomString = (length: number, seed: number) => {
-  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(seededRandom(seed + i) * chars.length));
-  }
-  return result;
-};
-
 // Generate organically distributed positions
 const generatePositions = (count: number, containerWidth: number, containerHeight: number) => {
   const avatarSize = 56;
 
-  // Padding from edges
-  const topPadding = 50;
-  const bottomPadding = 45;
-  const sidePadding = 40;
+  // Frosted glass container bounds (92% width, 90% height, centered)
+  const glassWidth = containerWidth * 0.92;
+  const glassHeight = containerHeight * 0.90;
+  const glassLeft = (containerWidth - glassWidth) / 2;
+  const glassTop = (containerHeight - glassHeight) / 2;
 
-  const availableWidth = containerWidth - 2 * sidePadding;
-  const availableHeight = containerHeight - topPadding - bottomPadding;
+  // Padding from glass container edges
+  const topPadding = glassTop + 50;
+  const sidePadding = glassLeft + 40;
+
+  const availableWidth = glassWidth - 80;
+  const availableHeight = glassHeight - 95;
 
   // Calculate optimal grid size for count items
   const aspectRatio = availableWidth / availableHeight;
@@ -77,8 +64,8 @@ const generatePositions = (count: number, containerWidth: number, containerHeigh
       const extraDisplaceY = (seededRandom(seed + 300) - 0.5) * 15;
 
       allPositions.push({
-        x: Math.max(sidePadding + avatarSize / 2, Math.min(containerWidth - sidePadding - avatarSize / 2, baseX + jitterX + extraDisplaceX)),
-        y: Math.max(topPadding + avatarSize / 2, Math.min(containerHeight - bottomPadding - avatarSize / 2, baseY + jitterY + extraDisplaceY)),
+        x: Math.max(sidePadding + avatarSize / 2, Math.min(glassLeft + glassWidth - 40 - avatarSize / 2, baseX + jitterX + extraDisplaceX)),
+        y: Math.max(topPadding + avatarSize / 2, Math.min(glassTop + glassHeight - 45 - avatarSize / 2, baseY + jitterY + extraDisplaceY)),
         size: avatarSize,
       });
 
@@ -91,6 +78,9 @@ const generatePositions = (count: number, containerWidth: number, containerHeigh
 
 const Classroom = () => {
   const [containerSize, setContainerSize] = useState({ width: 1200, height: 800 });
+  const [players, setPlayers] = useState<RandomPlayer[]>([]);
+  const [newPlayerIds, setNewPlayerIds] = useState<Set<string>>(new Set());
+  const knownPlayerIds = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     const updateSize = () => {
@@ -105,18 +95,49 @@ const Classroom = () => {
     return () => window.removeEventListener("resize", updateSize);
   }, []);
 
-  const students = useMemo(() => {
-    const positions = generatePositions(50, containerSize.width, containerSize.height);
+  const fetchPlayers = useCallback(async () => {
+    const result = await fetchAllGameResults();
 
-    return chineseNames.map((name, index) => ({
-      id: index,
-      name,
-      avatarSeed: `${name}_${generateRandomString(6, index * 100)}`,
+    // Find new players
+    const newIds = new Set<string>();
+    result.forEach(player => {
+      if (!knownPlayerIds.current.has(player.id)) {
+        newIds.add(player.id);
+        knownPlayerIds.current.add(player.id);
+      }
+    });
+
+    if (newIds.size > 0) {
+      setNewPlayerIds(newIds);
+      // Clear animation state after animation completes
+      setTimeout(() => {
+        setNewPlayerIds(new Set());
+      }, 600);
+    }
+
+    setPlayers(result);
+  }, []);
+
+  useEffect(() => {
+    fetchPlayers();
+    const interval = setInterval(fetchPlayers, 10000);
+    return () => clearInterval(interval);
+  }, [fetchPlayers]);
+
+  const students = useMemo(() => {
+    if (players.length === 0) return [];
+
+    const positions = generatePositions(players.length, containerSize.width, containerSize.height);
+
+    return players.map((player, index) => ({
+      id: player.id,
+      name: player.player_name,
+      avatarSeed: player.avatar_seed,
       x: positions[index]?.x || 0,
       y: positions[index]?.y || 0,
       size: positions[index]?.size || 64,
     }));
-  }, [containerSize]);
+  }, [containerSize, players]);
 
   // Truncate name to 3 characters
   const truncateName = (name: string) => {
@@ -127,21 +148,32 @@ const Classroom = () => {
     <div className="min-h-screen relative overflow-hidden">
       {/* Background image */}
       <img
-        src="/bg.jpg"
+        src="/bg.avif"
         alt="Background"
         className="absolute inset-0 w-full h-full object-cover"
       />
 
+      {/* Frosted glass container */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[92%] h-[90%] backdrop-blur-xl bg-white/30 rounded-3xl border border-white/40 shadow-2xl" />
+
+      {/* Noise overlay layer */}
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[92%] h-[90%] rounded-3xl opacity-80 pointer-events-none z-[1]"
+        style={{ backgroundImage: 'url(/noise-overlay.png)', backgroundRepeat: 'repeat' }}
+      />
+
       {/* Avatar cloud with glassmorphism cards */}
-      {students.map((student) => (
+      {students.map((student) => {
+        const isNew = newPlayerIds.has(student.id);
+        return (
         <div
           key={student.id}
-          className="absolute flex flex-col items-center transition-all duration-300 hover:scale-110 hover:z-50 cursor-pointer group"
+          className={`absolute flex flex-col items-center transition-all duration-300 hover:scale-110 hover:z-50 cursor-pointer group ${isNew ? 'animate-pop-in' : ''}`}
           style={{
             left: student.x,
             top: student.y,
             transform: 'translate(-50%, -50%)',
-            zIndex: Math.floor(student.y / 10),
+            zIndex: isNew ? 100 : Math.floor(student.y / 10),
           }}
         >
           {/* Glassmorphism avatar container */}
@@ -172,13 +204,14 @@ const Classroom = () => {
             <span className="text-[12px] font-semibold text-neutral-800 drop-shadow-sm whitespace-nowrap">{truncateName(student.name)}</span>
           </div>
         </div>
-      ))}
+      );
+      })}
 
-      {/* Footer with glassmorphism */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 z-30">
+      {/* Header with glassmorphism */}
+      <div className="absolute top-0 left-0 right-0 p-4 z-30">
         <div className="flex justify-center">
           <div className="px-5 py-2.5 backdrop-blur-xl bg-white/20 rounded-full border border-white/30 shadow-lg">
-            <span className="text-sm text-white/90 drop-shadow-sm">已經有 {students.length} 人報到！</span>
+            <span className="text-sm text-gray-700 font-medium">已經有 {students.length} 人報到！</span>
           </div>
         </div>
       </div>

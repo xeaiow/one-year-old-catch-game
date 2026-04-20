@@ -12,6 +12,7 @@ interface GuessGameProps {
 }
 
 const MAX_SELECTIONS = 3;
+const CDN_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 type Step = 'items' | 'gender';
 
@@ -61,10 +62,14 @@ const GuessGame = ({ playerName, avatarSeed }: GuessGameProps) => {
     }
   };
 
-  const handleGenderSelect = async (gender: 'boy' | 'girl') => {
-    if (selectedGender || isSubmitting) return;
-
+  const handleGenderSelect = (gender: 'boy' | 'girl') => {
+    if (isSubmitting) return;
     setSelectedGender(gender);
+  };
+
+  const handleConfirmGender = async () => {
+    if (!selectedGender || isSubmitting) return;
+
     setShowConfetti(true);
     setIsSubmitting(true);
 
@@ -73,7 +78,7 @@ const GuessGame = ({ playerName, avatarSeed }: GuessGameProps) => {
         player_name: playerName,
         avatar_seed: avatarSeed,
         selected_items: selectedItemIds,
-        guessed_gender: gender === 'boy' ? 'male' : 'female',
+        guessed_gender: selectedGender === 'boy' ? 'male' : 'female',
       });
     } catch (error) {
       console.error("Failed to submit result:", error);
@@ -136,7 +141,7 @@ const GuessGame = ({ playerName, avatarSeed }: GuessGameProps) => {
                 <span className="text-primary drop-shadow-sm">✨ 猜猜看 </span>
                 <span className="text-accent-foreground drop-shadow-sm">小寶會抓什麼 ✨</span>
               </motion.h1>
-              <p className="text-muted-foreground text-sm sm:text-base mt-2">
+              <p className="text-muted-foreground text-lg mt-2">
                 {isItemsComplete ? '選擇完成！點擊下一步繼續' : `還可以選 ${MAX_SELECTIONS - selectedItemIds.length} 個物品`}
               </p>
             </motion.div>
@@ -151,36 +156,15 @@ const GuessGame = ({ playerName, avatarSeed }: GuessGameProps) => {
               <div className="relative">
                 {/* Corner decorations */}
                 <motion.span
-                  className="absolute -top-6 -left-6 text-2xl sm:text-3xl z-10"
-                  animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.1, 1] }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                >
-                  🌟
-                </motion.span>
-                <motion.span
                   className="absolute -top-6 -right-6 text-2xl sm:text-3xl z-10"
                   animate={{ rotate: [0, -15, 15, 0], scale: [1, 1.1, 1] }}
                   transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
                 >
                   💫
                 </motion.span>
-                <motion.span
-                  className="absolute -bottom-6 -left-6 text-2xl sm:text-3xl z-10"
-                  animate={{ y: [0, -5, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  💕
-                </motion.span>
-                <motion.span
-                  className="absolute -bottom-6 -right-6 text-2xl sm:text-3xl z-10"
-                  animate={{ y: [0, -5, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
-                >
-                  🎀
-                </motion.span>
 
                 <div className="relative">
-                  <div className="grid grid-cols-4 gap-3 sm:gap-4 md:gap-5 p-4 sm:p-6 md:p-8 bg-card/90 backdrop-blur-md rounded-3xl shadow-2xl border-2 border-primary/20">
+                  <div className="grid grid-cols-3 gap-3 sm:gap-4 md:gap-5 p-4 sm:p-6 md:p-8 bg-card/90 backdrop-blur-md rounded-3xl shadow-2xl border-2 border-primary/20">
                     {items.map((item, index) => (
                       <GuessCell
                         key={item.id}
@@ -201,20 +185,14 @@ const GuessGame = ({ playerName, avatarSeed }: GuessGameProps) => {
             </motion.div>
 
             {/* Next button */}
-            <AnimatePresence>
-              {isItemsComplete && (
-                <motion.button
-                  initial={{ scale: 0, opacity: 0, y: 20 }}
-                  animate={{ scale: 1, opacity: 1, y: 0 }}
-                  exit={{ scale: 0, opacity: 0 }}
-                  transition={{ type: "spring", stiffness: 200, damping: 12 }}
-                  onClick={handleNextStep}
-                  className="mt-6 px-8 py-3 bg-primary text-primary-foreground rounded-full font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
-                >
-                  下一步 ✨
-                </motion.button>
-              )}
-            </AnimatePresence>
+            {isItemsComplete && (
+              <button
+                onClick={handleNextStep}
+                className="mt-6 px-8 py-3 bg-primary text-primary-foreground rounded-full font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+              >
+                下一步 ✨
+              </button>
+            )}
           </motion.div>
         ) : (
           <motion.div
@@ -238,10 +216,10 @@ const GuessGame = ({ playerName, avatarSeed }: GuessGameProps) => {
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
                 <span className="text-primary drop-shadow-sm">✨ 猜猜看 </span>
-                <span className="text-accent-foreground drop-shadow-sm">是男生還是女生 ✨</span>
+                <span className="text-accent-foreground drop-shadow-sm">芒果是男生還是女生 ✨</span>
               </motion.h1>
               <p className="text-muted-foreground text-sm sm:text-base mt-2">
-                {selectedGender ? '選擇完成！' : '選擇一個'}
+                {selectedGender ? '選擇完成！' : ''}
               </p>
             </motion.div>
 
@@ -290,27 +268,25 @@ const GuessGame = ({ playerName, avatarSeed }: GuessGameProps) => {
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ delay: 0.1, type: "spring" }}
-                      whileHover={!selectedGender ? { scale: 1.05 } : {}}
-                      whileTap={!selectedGender ? { scale: 0.95 } : {}}
+                      whileHover={!isSubmitting ? { scale: 1.05 } : {}}
+                      whileTap={!isSubmitting ? { scale: 0.95 } : {}}
                       onClick={() => handleGenderSelect('boy')}
-                      disabled={selectedGender !== null}
+                      disabled={isSubmitting}
                       className={`
                         relative aspect-square w-full
                         rounded-2xl overflow-hidden
                         bg-kawaii-blue border-2
                         ${selectedGender === 'boy' ? 'border-primary ring-4 ring-glow-pink/60' : 'border-card/30'}
-                        ${selectedGender && selectedGender !== 'boy' ? 'opacity-40' : ''}
+                        ${selectedGender && selectedGender !== 'boy' ? 'opacity-60' : ''}
                         shadow-xl cursor-pointer
                         flex flex-col items-center justify-center gap-2
                         transition-all duration-300
                       `}
                     >
-                      <span className="absolute top-2 left-2 text-sm sm:text-base opacity-60">✨</span>
-                      <span className="absolute top-2 right-2 text-sm sm:text-base opacity-60">✨</span>
-                      <span className="absolute bottom-2 left-2 text-sm sm:text-base opacity-60">⭐</span>
-                      <span className="absolute bottom-2 right-2 text-sm sm:text-base opacity-60">⭐</span>
-                      <motion.span
-                        className="text-6xl sm:text-7xl md:text-8xl"
+                      <motion.img
+                        src={`${CDN_BASE}/cdn/male.avif`}
+                        alt="男生"
+                        className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain"
                         animate={selectedGender === 'boy' ? {
                           rotate: [0, -8, 8, -8, 0],
                           scale: [1, 1.1, 1],
@@ -318,9 +294,7 @@ const GuessGame = ({ playerName, avatarSeed }: GuessGameProps) => {
                           y: [0, -8, 0],
                         }}
                         transition={{ duration: selectedGender === 'boy' ? 0.6 : 2.5, repeat: Infinity }}
-                      >
-                        👦
-                      </motion.span>
+                      />
                       <span className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground/80">男生</span>
                       {selectedGender === 'boy' && (
                         <motion.div
@@ -342,27 +316,25 @@ const GuessGame = ({ playerName, avatarSeed }: GuessGameProps) => {
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ delay: 0.2, type: "spring" }}
-                      whileHover={!selectedGender ? { scale: 1.05 } : {}}
-                      whileTap={!selectedGender ? { scale: 0.95 } : {}}
+                      whileHover={!isSubmitting ? { scale: 1.05 } : {}}
+                      whileTap={!isSubmitting ? { scale: 0.95 } : {}}
                       onClick={() => handleGenderSelect('girl')}
-                      disabled={selectedGender !== null}
+                      disabled={isSubmitting}
                       className={`
                         relative aspect-square w-full
                         rounded-2xl overflow-hidden
                         bg-kawaii-pink border-2
                         ${selectedGender === 'girl' ? 'border-primary ring-4 ring-glow-pink/60' : 'border-card/30'}
-                        ${selectedGender && selectedGender !== 'girl' ? 'opacity-40' : ''}
+                        ${selectedGender && selectedGender !== 'girl' ? 'opacity-60' : ''}
                         shadow-xl cursor-pointer
                         flex flex-col items-center justify-center gap-2
                         transition-all duration-300
                       `}
                     >
-                      <span className="absolute top-2 left-2 text-sm sm:text-base opacity-60">💕</span>
-                      <span className="absolute top-2 right-2 text-sm sm:text-base opacity-60">💕</span>
-                      <span className="absolute bottom-2 left-2 text-sm sm:text-base opacity-60">🎀</span>
-                      <span className="absolute bottom-2 right-2 text-sm sm:text-base opacity-60">🎀</span>
-                      <motion.span
-                        className="text-6xl sm:text-7xl md:text-8xl"
+                      <motion.img
+                        src={`${CDN_BASE}/cdn/female.avif`}
+                        alt="女生"
+                        className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain"
                         animate={selectedGender === 'girl' ? {
                           rotate: [0, -8, 8, -8, 0],
                           scale: [1, 1.1, 1],
@@ -370,9 +342,7 @@ const GuessGame = ({ playerName, avatarSeed }: GuessGameProps) => {
                           y: [0, -8, 0],
                         }}
                         transition={{ duration: selectedGender === 'girl' ? 0.6 : 2.5, repeat: Infinity, delay: 0.3 }}
-                      >
-                        👧
-                      </motion.span>
+                      />
                       <span className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground/80">女生</span>
                       {selectedGender === 'girl' && (
                         <motion.div
@@ -393,9 +363,19 @@ const GuessGame = ({ playerName, avatarSeed }: GuessGameProps) => {
               </div>
             </motion.div>
 
-            {/* Selection message */}
+            {/* Confirm button */}
+            {selectedGender && !isSubmitting && (
+              <button
+                onClick={handleConfirmGender}
+                className="mt-6 px-8 py-3 bg-primary text-primary-foreground rounded-full font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+              >
+                確定送出 ✨
+              </button>
+            )}
+
+            {/* Completion message */}
             <AnimatePresence>
-              {selectedGender && (
+              {isSubmitting && (
                 <motion.div
                   initial={{ scale: 0, opacity: 0, y: 20 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
