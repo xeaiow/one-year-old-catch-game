@@ -23,7 +23,7 @@ const OneYearOldCatch = () => {
         {/* Left - Title */}
         <div className="flex-shrink-0">
           <h1 className="text-5xl font-light tracking-wide text-neutral-800 leading-relaxed">
-            涵晞會抓到哪些好東西呢？
+            小寶會抓到哪些好東西呢？
           </h1>
           <div className="w-12 h-px bg-neutral-300 mt-6" />
         </div>

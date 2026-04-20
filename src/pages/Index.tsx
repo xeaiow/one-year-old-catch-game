@@ -102,7 +102,7 @@ const Index = () => {
           <h1 className="text-2xl font-semibold text-foreground tracking-tight">
             歡迎您來參加
             <br />
-            吳涵晞的抓周儀式
+            小寶的抓周儀式
           </h1>
         </div>
 

@@ -1,73 +1,90 @@
-# Welcome to your Lovable project
+# 抓周派對互動遊戲 🎉
 
-## Project info
+一個專為小寶一歲生日抓周儀式打造的多人互動網頁遊戲。親友們透過自己的手機加入，一起猜寶寶會抓到哪些物品，並在大螢幕上同步揭曉結果。
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 功能特色
 
-## How can I edit this code?
+- 🎯 **猜猜看**：每位參加者選擇 N 個物品，預測小寶會抓哪些
+- 🎊 **結果揭曉**：主持人輸入抓周實際結果，大螢幕同步揭曉贏家
+- 🎮 **Bingo 模式**：以 Bingo 形式呈現選擇與結果
+- 👶 **角色選擇**：每位玩家挑選可愛的角色頭像
+- 📺 **Classroom 大螢幕視圖**：適合投影在活動現場
+- 🔁 **參加者自動補全**：名單即時搜尋、防止重複參加
+- 🛠️ **管理員後台**：管理玩家、物品、檢視結果與統計
 
-There are several ways of editing your application.
+## 技術架構
 
-**Use Lovable**
+### 前端 (`/`)
+- Vite + React 18 + TypeScript
+- Tailwind CSS + shadcn-ui (Radix UI)
+- framer-motion / motion 動畫
+- React Router、TanStack Query
+- canvas-confetti 慶祝特效
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### 後端 (`/api`)
+- Bun + Elysia
+- Supabase (PostgreSQL) 資料儲存
+- JWT 管理員認證
 
-Changes made via Lovable will be committed automatically to this repo.
+## 頁面結構
 
-**Use your preferred IDE**
+| 路徑 | 頁面 | 說明 |
+|------|------|------|
+| `/` | Index | 輸入名字加入遊戲 |
+| `/character` | CharacterSelect | 選擇角色頭像 |
+| `/guess` | Guess | 猜測小寶會抓的物品 |
+| `/guess-success` | GuessSuccess | 送出成功 |
+| `/reveal` | Reveal | 揭曉實際抓周結果 |
+| `/bingo` | Bingo | Bingo 呈現模式 |
+| `/classroom` | Classroom | 大螢幕觀看視圖 |
+| `/catch` | OneYearOldCatch | 抓周物品展示 |
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 快速開始
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 前置需求
+- Node.js & pnpm
+- Bun
+- Supabase 專案
 
-Follow these steps:
+### 前端
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```bash
+pnpm install
+pnpm dev
 ```
 
-**Edit a file directly in GitHub**
+建立 `.env` 檔案：
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```env
+VITE_API_URL=http://localhost:3001
+```
 
-**Use GitHub Codespaces**
+### 後端
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+詳細後端文件請見 [`api/README.md`](./api/README.md)。
 
-## What technologies are used for this project?
+```bash
+cd api
+bun install
+cp .env.example .env   # 填入 Supabase 與管理員設定
+bun run dev
+```
 
-This project is built with:
+### 資料庫 Migration
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+於 Supabase Dashboard 的 SQL Editor 執行 `supabase/migrations/` 目錄下的 SQL。
 
-## How can I deploy this project?
+## 專案結構
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+```
+.
+├── src/                  # 前端應用
+│   ├── pages/            # 路由頁面
+│   ├── components/       # UI、bingo、guess、reveal 子元件
+│   ├── integrations/     # Supabase client
+│   ├── hooks/ lib/       # 自訂 hooks 與 API helpers
+├── api/                  # Bun + Elysia 後端
+│   └── src/routes/       # 公開與管理員端點
+├── supabase/migrations/  # 資料庫 schema
+└── public/               # 物品圖片等靜態資源
+```

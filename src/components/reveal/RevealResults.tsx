@@ -136,10 +136,10 @@ const RevealResults = () => {
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
                 <span className="text-primary drop-shadow-sm">🎯 揭曉 </span>
-                <span className="text-accent-foreground drop-shadow-sm">涵晞抓了什麼 🎯</span>
+                <span className="text-accent-foreground drop-shadow-sm">小寶抓了什麼 🎯</span>
               </motion.h1>
               <p className="text-muted-foreground text-sm sm:text-base mt-2">
-                {isItemsComplete ? '選擇完成！點擊揭曉結果' : `選擇涵晞抓的 ${MAX_SELECTIONS} 個物品`}
+                {isItemsComplete ? '選擇完成！點擊揭曉結果' : `選擇小寶抓的 ${MAX_SELECTIONS} 個物品`}
               </p>
             </motion.div>
 
@@ -261,7 +261,7 @@ const RevealResults = () => {
                 <span className="text-foreground drop-shadow-lg">🎊 結果揭曉 🎊</span>
               </motion.h1>
               <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
-                <span className="text-muted-foreground text-sm sm:text-base">涵晞抓了：</span>
+                <span className="text-muted-foreground text-sm sm:text-base">小寶抓了：</span>
                 {selectedItemNames.map((name, index) => (
                   <motion.span
                     key={index}

@@ -134,7 +134,7 @@ const GuessGame = ({ playerName, avatarSeed }: GuessGameProps) => {
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
                 <span className="text-primary drop-shadow-sm">✨ 猜猜看 </span>
-                <span className="text-accent-foreground drop-shadow-sm">涵晞會抓什麼 ✨</span>
+                <span className="text-accent-foreground drop-shadow-sm">小寶會抓什麼 ✨</span>
               </motion.h1>
               <p className="text-muted-foreground text-sm sm:text-base mt-2">
                 {isItemsComplete ? '選擇完成！點擊下一步繼續' : `還可以選 ${MAX_SELECTIONS - selectedItemIds.length} 個物品`}
