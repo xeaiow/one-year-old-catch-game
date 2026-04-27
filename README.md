@@ -1,6 +1,6 @@
 # One-Year-Old Catch Party Game 🎉
 
-A multiplayer interactive web game built for 小寶's first-birthday "catch" (抓周) ceremony. Family and friends join from their own phones to predict which items the baby will grab, and results are revealed in sync on the big screen.
+A multiplayer interactive web game built for a baby's first-birthday "catch" (抓周) ceremony. Family and friends join from their own phones to predict which items the baby will grab, and results are revealed in sync on the big screen.
 
 ## Features
 
